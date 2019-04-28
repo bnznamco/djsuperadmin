@@ -4,11 +4,9 @@ from .serializers import ContentSerializer
 
 # Create your views here.
 
-class ContentViewSet(viewsets.ModelViewSet):
 
+class ContentViewSet(viewsets.ModelViewSet):
     queryset = Content.objects.all()
     serializer_class = ContentSerializer
     model = Content
     lookup_field = 'pk'
-
-    

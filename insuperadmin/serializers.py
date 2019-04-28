@@ -8,4 +8,3 @@ class ContentSerializer(TranslatableModelSerializer):
     class Meta:
         model = Content
         fields = '__all__'
-

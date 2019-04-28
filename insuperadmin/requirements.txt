@@ -1,2 +1,0 @@
-django-hvad==1.8.0
-djangorestframework==3.5.2
