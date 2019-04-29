@@ -1,7 +1,5 @@
 include LICENSE
 include README.md
-recursive-include monkeyrider/bin *
-recursive-include monkeyrider/lib *
+recursive-include static *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
-recursive-exclude * *.class
