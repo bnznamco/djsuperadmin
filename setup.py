@@ -4,9 +4,9 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='insuperadmin',
+    name='djsuperadmin',
     version='0.0.1',
-    url='https://github.com/bnznamco/insuperadmin',
+    url='https://github.com/bnznamco/djsuperadmin',
     install_requires=[
         'django-hvad @ https://github.com/kristianoellegaard/django-hvad/tarball/releases/2.0.x',
         'djangorestframework>=3.9.2',
