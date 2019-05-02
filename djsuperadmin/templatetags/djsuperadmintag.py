@@ -1,8 +1,11 @@
 from django import template
 from django.utils.safestring import mark_safe
 from djsuperadmin.models import Content
+from django.utils.html import escape
 
 def _get_span(editor_mode,content):
+    if editor_mode==0:
+       content.content = escape(content.content)
     return ("<span class=\"djsuperadmin\" data-mode="+str(editor_mode)+" data-djsa ="+str(content.id)+">"+content.content+"</span>")
 
 def _get_content(context,identifier,editor_mode,placeholder="New content"):
@@ -13,7 +16,7 @@ def _get_content(context,identifier,editor_mode,placeholder="New content"):
     if context['request'].user.is_superuser:
         return mark_safe(_get_span(editor_mode,content))
     else:
-        return mark_safe(content.content)
+        return content.content
 
 register = template.Library()
 
