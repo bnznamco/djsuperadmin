@@ -14,7 +14,7 @@ INSTALLED_APPS = [
 
 context_processors = [
     ...
-    'djsuperadmin.context_processors.insuperamin' 
+    'djsuperadmin.context_processors.djsuperamin' 
     ...
 ]
 ```
