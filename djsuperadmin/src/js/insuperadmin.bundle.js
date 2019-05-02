@@ -28,7 +28,13 @@ document.body.appendChild(logout_link_button);
 
 var classname = document.getElementsByClassName("djsuperadmin");
 var content;
-
+var editor_mode = 1
+/**
+ * editor mode 
+ * 0 : bare editor, only a textare USE IT WITH CAUTION
+ * 1 : full quill editor
+ * 2 : lite quill editor (you can't use other than <strong> <b> <i> <u>) 
+ */
 isTokenNeeded = (method) => {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
@@ -47,6 +53,7 @@ getOptions = (req_method) => {
 
 var getContent = function() {
     var attribute = this.getAttribute("data-djsa");
+    editor_mode = this.getAttribute("data-editor_mode");
     var options = getOptions('GET');
     var url= "/djsuperadmin/contents/"+attribute+"/";
     fetch(url, options).then(status).then(json).then(function(data) {  
@@ -70,7 +77,7 @@ pushContent = (htmlcontent) => {
     });
 };
 
-getUpEdit = () => {
+getUpEdit = (editor_mode) => {
     var background = document.createElement('div');
     var container = document.createElement('div');
     var editor = document.createElement('div');
@@ -85,10 +92,23 @@ getUpEdit = () => {
     container.appendChild(btn);
     background.appendChild(container);
     document.body.appendChild(background);
-    var quill = new Quill('#editor', {
-        theme: 'snow'
-    });
-    btn.addEventListener('click', function(){pushContent(quill.container.firstChild.innerHTML)}, false);
+    var editor = null;
+    var content =null
+    switch(editor_mode) {
+        case 0:
+            editor = document.createElement("textarea");
+            content = editor.value
+        break;
+        case 2:
+          // code block
+          break;
+        default:
+            editor = new Quill('#editor', {
+                theme: 'snow'
+            });
+            content = editor.container.firstChild.innerHTML
+    } 
+    btn.addEventListener('click', function(){pushContent(content)}, false);
     window.onclick = function(event) {
         if (event.target == background) {
             background.remove()
