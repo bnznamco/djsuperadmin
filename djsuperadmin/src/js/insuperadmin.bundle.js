@@ -53,12 +53,12 @@ getOptions = (req_method) => {
 
 var getContent = function() {
     var attribute = this.getAttribute("data-djsa");
-    editor_mode = this.getAttribute("data-editor_mode");
+    editor_mode = this.getAttribute("data-mode");
     var options = getOptions('GET');
     var url= "/djsuperadmin/contents/"+attribute+"/";
     fetch(url, options).then(status).then(json).then(function(data) {  
             content = data;
-            getUpEdit();
+            getUpEdit(editor_mode);
     }).catch(function(error) {
         console.log('Request failed', error);
     });
@@ -77,38 +77,46 @@ pushContent = (htmlcontent) => {
     });
 };
 
-getUpEdit = (editor_mode) => {
+
+
+getUpEdit = (editor_mode=editor_mode) => {
     var background = document.createElement('div');
     var container = document.createElement('div');
-    var editor = document.createElement('div');
     var btn = document.createElement("button");
     btn.innerHTML = 'SALVA';
     btn.classList.add('djsuperadmin-save');
-    editor.id = 'editor';
-    editor.innerHTML = content.content;
+
     background.classList.add("djsuperadmin-background");
     container.classList.add("djsuperadmin-editor");
-    container.appendChild(editor);
-    container.appendChild(btn);
+
     background.appendChild(container);
     document.body.appendChild(background);
     var editor = null;
-    var content =null
+    var editor_content =null;
     switch(editor_mode) {
-        case 0:
+        case '0':
             editor = document.createElement("textarea");
-            content = editor.value
+            editor.value = content.content;
+            editor.className="ql-container";
+            editor_content = () => { return editor.value } 
+            container.appendChild(editor);
+
         break;
-        case 2:
+        case '2':
           // code block
           break;
         default:
+            editor = document.createElement('div');   
+            editor.id = 'editor';
+            editor.innerHTML = content.content;
+            container.appendChild(editor);
             editor = new Quill('#editor', {
                 theme: 'snow'
             });
-            content = editor.container.firstChild.innerHTML
+            editor_content = () => { return editor.container.firstChild.innerHTML }
     } 
-    btn.addEventListener('click', function(){pushContent(content)}, false);
+    container.appendChild(btn);
+    btn.addEventListener('click', function(){ pushContent(editor_content())}, false);
     window.onclick = function(event) {
         if (event.target == background) {
             background.remove()
