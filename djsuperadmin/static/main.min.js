@@ -1,17 +1,17 @@
 getCookie = (name) => {
-	var value = "; " + document.cookie;
-	var parts = value.split("; " + name + "=");
-	if (parts.length == 2) return parts.pop().split(";").shift();
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
 };
 
-status = (response) =>{
+status = (response) => {
     if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response)
+        return Promise.resolve(response)
     } else {
-      return Promise.reject(new Error(response.statusText))
+        return Promise.reject(new Error(response.statusText))
     }
 };
-  
+
 json = (response) => {
     return response.json()
 };
@@ -51,15 +51,15 @@ getOptions = (req_method) => {
 }
 
 
-var getContent = function() {
+var getContent = function () {
     var attribute = this.getAttribute("data-djsa");
     editor_mode = this.getAttribute("data-mode");
     var options = getOptions('GET');
-    var url= "/djsuperadmin/contents/"+attribute+"/";
-    fetch(url, options).then(status).then(json).then(function(data) {  
-            content = data;
-            getUpEdit(editor_mode);
-    }).catch(function(error) {
+    var url = "/djsuperadmin/contents/" + attribute + "/";
+    fetch(url, options).then(status).then(json).then(function (data) {
+        content = data;
+        getUpEdit(editor_mode);
+    }).catch(function (error) {
         console.log('Request failed', error);
     });
 };
@@ -67,19 +67,19 @@ var getContent = function() {
 
 pushContent = (htmlcontent) => {
     content.content = htmlcontent;
-    var url= '/djsuperadmin/contents/'+content.id+'/';
+    var url = '/djsuperadmin/contents/' + content.id + '/';
     var options = getOptions('PATCH');
-    options['body']=JSON.stringify(content);
-    fetch(url, options).then(status).then(json).then(function(data) {  
-        location.reload() 
-    }).catch(function(error) {
+    options['body'] = JSON.stringify(content);
+    fetch(url, options).then(status).then(json).then(function (data) {
+        location.reload()
+    }).catch(function (error) {
         console.log('Request failed', error);
     });
 };
 
 
 
-getUpEdit = (editor_mode=editor_mode) => {
+getUpEdit = (editor_mode = editor_mode) => {
     var background = document.createElement('div');
     var container = document.createElement('div');
     var btn = document.createElement("button");
@@ -92,21 +92,21 @@ getUpEdit = (editor_mode=editor_mode) => {
     background.appendChild(container);
     document.body.appendChild(background);
     var editor = null;
-    var editor_content =null;
-    switch(editor_mode) {
+    var editor_content = null;
+    switch (editor_mode) {
         case '0':
             editor = document.createElement("textarea");
             editor.value = content.content;
-            editor.className="ql-container";
-            editor_content = () => { return editor.value } 
+            editor.className = "ql-container";
+            editor_content = () => { return editor.value }
             container.appendChild(editor);
 
-        break;
+            break;
         case '2':
-          // code block
-          break;
+            // code block
+            break;
         default:
-            editor = document.createElement('div');   
+            editor = document.createElement('div');
             editor.id = 'editor';
             editor.innerHTML = content.content;
             container.appendChild(editor);
@@ -114,17 +114,17 @@ getUpEdit = (editor_mode=editor_mode) => {
                 theme: 'snow'
             });
             editor_content = () => { return editor.container.firstChild.innerHTML }
-    } 
+    }
     container.appendChild(btn);
-    btn.addEventListener('click', function(){ pushContent(editor_content())}, false);
-    window.onclick = function(event) {
+    btn.addEventListener('click', function () { pushContent(editor_content()) }, false);
+    window.onclick = function (event) {
         if (event.target == background) {
             background.remove()
         }
     }
 };
 
-destroyEdit = () =>{
+destroyEdit = () => {
     this.remove()
 };
 

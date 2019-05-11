@@ -37,12 +37,12 @@ If you want use Quill Editor
     </div>
 </body>
 ```
-If you want a raw content (use it with caution, `<script>` tag are allowed)
+If you want a raw content (no html needed)
 ```html
 <body>
-    <div>
+    <p>
         {% content_raw 'customcontent_id' %}
-    </div>
+    </p>
 </body>
 ```
 ```html

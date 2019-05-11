@@ -6,9 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 class BaseContent(TranslatableModel):
     identifier = models.CharField(max_length=200)
     translations = TranslatedFields(
-        permalink = models.CharField(max_length=200, blank=True, null=True),
-        content = models.TextField()
-    )
+        permalink=models.CharField(max_length=200, blank=True, null=True),
+        content=models.TextField())
+
     class Meta:
         abstract = True
         permissions = (
