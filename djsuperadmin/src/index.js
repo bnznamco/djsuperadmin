@@ -1,4 +1,4 @@
 import './scss/styles.scss';
-import './js/insuperadmin.core'
+import './js/djsuperadmin.core';
 
 
