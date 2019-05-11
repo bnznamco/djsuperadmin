@@ -53,20 +53,33 @@ var getOptions = (req_method) => {
     return opt;
 }
 
+var handleClick = function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    var element = this
+    clearTimeout(this.clickTimeout);
+    this.clickTimeout = setTimeout(function () {
+        if (event.detail == 2) {
+            getContent(element)
+        } else {
+            event.target.parentNode.click()
+        }
+    }, 200);
 
-var getContent = function () {
-    var attribute = this.getAttribute("data-djsa");
-    editor_mode = this.getAttribute("data-mode");
+}
+
+var getContent = function (element) {
+    var attribute = element.getAttribute("data-djsa");
+    editor_mode = element.getAttribute("data-mode");
     var options = getOptions('GET');
     var url = "/djsuperadmin/contents/" + attribute + "/";
     fetch(url, options).then(status).then(json).then(function (data) {
         content = data;
-        getUpEdit(editor_mode);
+        buildModal(editor_mode);
     }).catch(function (error) {
         console.log('Request failed', error);
     });
 };
-
 
 var pushContent = (htmlcontent) => {
     content.content = htmlcontent;
@@ -80,9 +93,7 @@ var pushContent = (htmlcontent) => {
     });
 };
 
-
-
-var getUpEdit = (editor_mode = editor_mode) => {
+var buildModal = (editor_mode = editor_mode) => {
     var background = document.createElement('div');
     var container = document.createElement('div');
     var btn = document.createElement("button");
@@ -128,6 +139,6 @@ var getUpEdit = (editor_mode = editor_mode) => {
 };
 
 for (var i = 0; i < classname.length; i++) {
-    classname[i].addEventListener('dblclick', getContent, false);
+    classname[i].addEventListener('click', handleClick, false);
     classname[i].parentNode.classList.add('djsuperadmin-content')
 }
