@@ -24,11 +24,6 @@ context_processors = [
 ```html
 {% load djsuperadmin %}
 ```
-```html
-<head>   
-    {{djsuperadmincss}}
-</head>
-```
 If you want use Quill Editor
 ```html
 <body>

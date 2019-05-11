@@ -1,10 +1,32 @@
-getCookie = (name) => {
+
+import Quill from 'quill/core';
+
+import Toolbar from 'quill/modules/toolbar';
+import Snow from 'quill/themes/snow';
+
+import Bold from 'quill/formats/bold';
+import Italic from 'quill/formats/italic';
+import Header from 'quill/formats/header';
+
+
+Quill.register({
+  'modules/toolbar': Toolbar,
+  'themes/snow': Snow,
+  'formats/bold': Bold,
+  'formats/italic': Italic,
+  'formats/header': Header
+});
+
+
+export default Quill;
+
+var getCookie = (name) => {
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
     if (parts.length == 2) return parts.pop().split(";").shift();
 };
 
-status = (response) => {
+var status = (response) => {
     if (response.status >= 200 && response.status < 300) {
         return Promise.resolve(response)
     } else {
@@ -12,7 +34,7 @@ status = (response) => {
     }
 };
 
-json = (response) => {
+var json = (response) => {
     return response.json()
 };
 
@@ -35,11 +57,11 @@ var editor_mode = 1
  * 1 : full quill editor
  * 2 : lite quill editor (you can't use other than <strong> <b> <i> <u>) 
  */
-isTokenNeeded = (method) => {
+var isTokenNeeded = (method) => {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
-getOptions = (req_method) => {
+var getOptions = (req_method) => {
     let opt = {}
     opt['method'] = req_method;
     opt['headers'] = {};
@@ -65,7 +87,7 @@ var getContent = function () {
 };
 
 
-pushContent = (htmlcontent) => {
+var pushContent = (htmlcontent) => {
     content.content = htmlcontent;
     var url = '/djsuperadmin/contents/' + content.id + '/';
     var options = getOptions('PATCH');
@@ -79,7 +101,7 @@ pushContent = (htmlcontent) => {
 
 
 
-getUpEdit = (editor_mode = editor_mode) => {
+var getUpEdit = (editor_mode = editor_mode) => {
     var background = document.createElement('div');
     var container = document.createElement('div');
     var btn = document.createElement("button");
@@ -122,10 +144,6 @@ getUpEdit = (editor_mode = editor_mode) => {
             background.remove()
         }
     }
-};
-
-destroyEdit = () => {
-    this.remove()
 };
 
 for (var i = 0; i < classname.length; i++) {

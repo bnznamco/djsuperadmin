@@ -1,0 +1,45 @@
+{
+  "name": "djsuperadmin",
+  "version": "1.0.0",
+  "description": "Content edit engine for django",
+  "private": true,
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bnznamco/djsuperadmin.git"
+  },
+  "keywords": [
+    "django",
+    "content",
+    "traslatable",
+    "edit",
+    "page-content"
+  ],
+  "author": "Gabriele Baldi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bnznamco/djsuperadmin/issues"
+  },
+  "homepage": "https://github.com/bnznamco/djsuperadmin#readme",
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.1",
+    "html-loader": "^0.5.5",
+    "postcss-loader": "^3.0.0",
+    "sass": "^1.20.1",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^6.0.0",
+    "typescript": "^3.4.5",
+    "webpack": "^4.31.0",
+    "webpack-cli": "^3.3.2"
+  },
+  "dependencies": {
+    "quill": "^1.3.6"
+  }
+}
