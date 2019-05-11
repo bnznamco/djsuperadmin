@@ -111,7 +111,7 @@ var buildModal = (editor_mode = editor_mode) => {
         case '0':
             editor = document.createElement("textarea");
             editor.value = content.content;
-            editor.className = "ql-container";
+            editor.className = "raw-editor";
             editor_content = () => { return editor.value }
             container.appendChild(editor);
 

@@ -1,6 +1,7 @@
 .djsuperadmin-content {
   border: 2px #ff5050 dotted;
   border-radius: 6px;
+  padding: 0.2rem .5rem;
 }
 .djsuperadmin-background {
   position: fixed;
@@ -43,6 +44,15 @@
   transform: translateX(-50%);
   margin-top: 1rem;
   cursor: pointer;
+}
+.raw-editor {
+  background: white;
+  min-width: 35rem;
+  min-height: 15rem;
+  font-size: 1.5rem;
+  text-align: center;
+  display: block;
+  border-radius: .5rem;
 }
 .ql-container {
   background: white;
