@@ -1,4 +1,4 @@
-import Quill from './djsuperadmin.quill'
+import { Quill, quillFullConfig } from './djsuperadmin.quill'
 
 
 var getCookie = (name) => {
@@ -124,9 +124,7 @@ var buildModal = (editor_mode = editor_mode) => {
             editor.id = 'editor';
             editor.innerHTML = content.content;
             container.appendChild(editor);
-            editor = new Quill('#editor', {
-                theme: 'snow'
-            });
+            editor = new Quill('#editor', quillFullConfig);
             editor_content = () => { return editor.container.firstChild.innerHTML }
     }
     container.appendChild(btn);
