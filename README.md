@@ -19,6 +19,13 @@ context_processors = [
 ]
 ```
 
+**In your project/urls.py**
+```py
+urlpatterns = [
+    ...
+    url(r'^djsuperadmin/', include('djsuperadmin.urls'))
+]
+```
 
 **In your template.html**
 ```html
