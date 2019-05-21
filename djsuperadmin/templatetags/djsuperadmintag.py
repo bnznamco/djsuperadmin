@@ -19,7 +19,7 @@ def _get_content(context, identifier, editor_mode, placeholder="New content"):
     if context['request'].user.is_superuser:
         return mark_safe(_get_span(editor_mode, content))
     else:
-        return content.content
+        return content.content if editor_mode==0 else mark_safe(content.content)
 
 
 register = template.Library()
