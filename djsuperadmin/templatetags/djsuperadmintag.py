@@ -7,19 +7,19 @@ from django.utils.html import escape
 def _get_span(editor_mode, content):
     if editor_mode == 0:
         content.content = escape(content.content)
-    return '<span class="djsuperadmin" data-mode="{0}" data-djsa ="{1}">{2}</span>'.format(
-            str(editor_mode), str(content.id), content.content)
+    return '<span class="djsuperadmin" data-mode="{0}" data-djsa ="{1}">{2}</span>'.format(str(editor_mode), str(content.id), content.content)
 
 
 def _get_content(context, identifier, editor_mode, placeholder="New content"):
-    content, created = Content.objects.language().fallbacks().get_or_create(identifier=identifier)
-    if created:
-        content.content = placeholder
-        content.save()
-    if context['request'].user.is_superuser:
+    content = (
+        context["djsa-contents"]
+        and next((c for c in context["djsa-contents"] if c.identifier == identifier), None)
+        or Content.objects.language().fallbacks().create(identifier=identifier, content=placeholder)
+    )
+    if context["request"].user.is_superuser:
         return mark_safe(_get_span(editor_mode, content))
     else:
-        return content.content if editor_mode==0 else mark_safe(content.content)
+        return content.content if editor_mode == 0 else mark_safe(content.content)
 
 
 register = template.Library()
