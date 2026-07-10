@@ -1,0 +1,21 @@
+{% load djsuperadmintag %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DjSuperAdmin demo</title>
+</head>
+<body>
+  <h1>DjSuperAdmin demo</h1>
+  <p>Log in to the <a href="/admin/">admin</a> as a superuser, then reload this
+     page: every content below becomes editable in place.</p>
+
+  <h2>WYSIWYG content</h2>
+  <p>{% superadmin_content 'Some default content' %}</p>
+
+  <h2>Raw content</h2>
+  <p>{% superadmin_raw_content 'Some raw default content' %}</p>
+
+  {% djsuperadminjs %}
+</body>
+</html>

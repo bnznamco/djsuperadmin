@@ -1,99 +1,171 @@
-# DjSuperAdmin [![PyPI](https://img.shields.io/pypi/v/djsuperadmin?style=flat-square)](https://pypi.org/project/djsuperadmin/) ![Codecov](https://img.shields.io/codecov/c/github/lotrekagency/djsuperadmin?style=flat-square) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lotrekagency/djsuperadmin/Test,%20Coverage%20and%20Release?style=flat-square) [![GitHub](https://img.shields.io/github/license/lotrekagency/camomilla?style=flat-square)](./LICENSE)
+# DjSuperAdmin
 
-✍🏻 Edit contents directly on your page with Django
+[![PyPI version](https://img.shields.io/pypi/v/djsuperadmin?style=flat-square)](https://pypi.org/project/djsuperadmin/)
+![Codecov](https://img.shields.io/codecov/c/github/lotrekagency/djsuperadmin?style=flat-square)
+![CI status](https://img.shields.io/github/actions/workflow/status/lotrekagency/djsuperadmin/ci.yml?style=flat-square)
+[![License](https://img.shields.io/github/license/lotrekagency/djsuperadmin?style=flat-square)](./LICENSE)
 
+> ✍️ Edit contents directly on your page with Django
 
-## Here how it works!
+## Here's how it works
 
-<img src="https://github.com/lotrekagency/djsuperadmin/raw/master/demo.gif" alt="DjSuperAdmin demo" style="width: 100%;">
+<img src="https://github.com/lotrekagency/djsuperadmin/raw/master/demo.gif" width="100%" alt="djsuperadmin demo" />
+
+Superusers get an inline editor (CKEditor 4, loaded from a CDN) right on the rendered
+page. Everyone else just sees the plain content.
+
+## Compatibility
+
+- **Django** 2.0 → latest (tested 2.2 → 6.0)
+- **Python** 3.6+
+- **Zero runtime dependencies** (other than Django itself)
 
 ## Installation
 
-```sh
+```bash
 pip install djsuperadmin
+# or
+uv add djsuperadmin
 ```
 
 ## Setup
 
-Add `djsuperadmin` to your `INSTALLED_APPS` in `settings.py`
+Add the app to `INSTALLED_APPS`:
 
-```py
+```python
 INSTALLED_APPS = [
     # ...
-    'djsuperadmin'
+    "djsuperadmin",
 ]
 ```
 
-And import all the required js files in the footer
+Include the urls **only** if you use the built-in `Content` model (i.e. the bare-string
+tag form shown below):
+
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    # ...
+    path("", include("djsuperadmin.urls")),
+]
+```
+
+Finally, load the template tags and drop `{% djsuperadminjs %}` **once** in your footer.
+It injects CKEditor + the djsuperadmin bundle, and renders **only** for authenticated
+superusers (empty string for everyone else):
 
 ```html
 {% load djsuperadmintag %}
+
+<!-- ... your page ... -->
 
 {% djsuperadminjs %}
 ```
 
-## Usage:
+## Usage
 
-### Simple:
+### Simple (bare string)
 
-Djsuperadmin now comes with its own content model. You can use it directly in templates, like this:
+Pass a default string. djsuperadmin stores it in its built-in `Content` model, keyed by a
+hash of the text and auto-created on first render. Requires the urls to be included.
 
 ```html
 {% load djsuperadmintag %}
 
-...
-
-<body>
-    <p>
-        {% superadmin_content 'Some default content' %}
-    </p>
-</body>
+{% superadmin_content 'Some default text' %}
 ```
 
-Try also the raw content ```{% superadmin_content_raw 'Some default content' %}``` to edit things without a wysiwyg !
+### Raw content
 
-### Advanced:
+Same as above but with a plain textarea editor (no WYSIWYG) — good for plain text or
+snippets. Note the tag name is `superadmin_raw_content`:
 
-Define your `custom Content` model using `DjSuperAdminMixin` and provide an endpoint to GET/PATCH your content
+```html
+{% superadmin_raw_content 'Some default text' %}
+```
 
-```py
+### Bind to a model attribute
+
+Both tags also accept an object and an attribute name. Superusers see an editable
+`<span class="djsuperadmin">`, everyone else sees the plain value:
+
+```html
+{% superadmin_content my_object 'body' %}
+{% superadmin_raw_content my_object 'body' %}
+```
+
+### Advanced: your own content model + endpoint
+
+Mix in `DjSuperAdminMixin` and expose a GET/PATCH endpoint. The mixin raises
+`NotImplementedError` if the two url properties are not defined.
+
+```python
 from django.db import models
 from djsuperadmin.mixins import DjSuperAdminMixin
 
 
-class GenericContent(models.Model, DjSuperAdminMixin):
-
-    identifier = models.CharField(max_length=200, unique=True)
-    content = models.TextField()
+class MyContent(models.Model, DjSuperAdminMixin):
+    body = models.TextField()
 
     @property
     def superadmin_get_url(self):
-        return f'/api/content/{self.pk}'
+        return f"/api/mycontent/{self.pk}"
 
     @property
     def superadmin_patch_url(self):
-        return f'/api/content/{self.pk}'
+        return f"/api/mycontent/{self.pk}"
 ```
 
-Then in your template
+Your endpoint must:
+
+- `GET` → return JSON `{"content": <value>}`
+- `PATCH` with body `{"content": <value>}` → save it
+
+Then render it like any other object:
 
 ```html
-{% load djsuperadmintag %}
-
-...
-
-<body>
-    <p>
-        {% superadmin_content your_object 'your_object_attribute' %}
-    </p>
-</body>
+{% superadmin_content my_content 'body' %}
 ```
 
-
-## Settings:
-
-Try out the new djsuperadmin in_place mode for raw content! Type in your settings.py:
+## Settings
 
 ```python
 DJSUPERADMIN = {"INPLACE_EDIT": True}
 ```
+
+When `INPLACE_EDIT` is `True`, **raw** contents are edited in place via `contenteditable`
+instead of a modal. Defaults to `False`.
+
+## Development
+
+Contributions welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md). Tooling is
+[uv](https://github.com/astral-sh/uv) (Python) + [pnpm](https://pnpm.io/) (JS build & docs),
+with the frontend bundle built by Vite.
+
+```bash
+make install      # uv sync --dev && pnpm install
+make test         # flake8 + pytest with coverage
+make format       # black .
+make lint         # flake8 djsuperadmin
+make build        # rebuild djsuperadmin/dist/djsuperadmin.bundle.js
+make migrations   # uv run python manage.py makemigrations
+make docs-dev     # VitePress docs (also: docs-build, docs-preview)
+```
+
+Run the demo / test project (`example/`, settings module
+`example.djsuperadmin_example.settings`):
+
+```bash
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
+uv run python manage.py runserver   # log in at /admin/, then open /
+```
+
+## Documentation
+
+Full docs: <https://lotrekagency.github.io/djsuperadmin/>
+
+---
+
+MIT licensed, by [Lotrèk](https://www.lotrek.it/).

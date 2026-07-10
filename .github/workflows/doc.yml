@@ -1,0 +1,67 @@
+name: 🖨️ Documentation
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "docs/**"
+      - "CHANGELOG.md"
+      - "CONTRIBUTING.md"
+      - "LICENSE"
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["🚀 Release"]
+    types:
+      - completed
+
+permissions:
+  contents: write # required to push to gh-pages
+  pages: write
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event_name != 'workflow_run' ||
+          (github.event.workflow_run.conclusion == 'success' &&
+           github.event.workflow_run.head_branch == 'master') }}
+    env:
+      CI: true
+    name: 📇 Build and publish docs
+    steps:
+      - name: 📌 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🚚 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🪢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔖 Sync CHANGELOG / CONTRIBUTING / LICENSE into docs
+        run: bash scripts/sync-docs-from-root.sh
+
+      - name: 📚 Build docs
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+        run: pnpm run docs:build
+
+      - name: 🌍 Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/.vitepress/dist
+          publish_branch: gh-pages
+          commit_message: "docs: publish ${{ github.sha }}"

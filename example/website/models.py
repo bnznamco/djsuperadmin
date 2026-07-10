@@ -1,8 +1,11 @@
 from django.db import models
+
 from djsuperadmin.mixins import DjSuperAdminMixin
 
 
 class Content(models.Model, DjSuperAdminMixin):
+    """Example of a custom content model wired to your own API endpoint."""
+
     identifier = models.CharField(max_length=200, unique=True)
     content = models.TextField()
 
@@ -16,5 +19,7 @@ class Content(models.Model, DjSuperAdminMixin):
 
 
 class ContentWithoutUrls(models.Model, DjSuperAdminMixin):
+    """A model that forgets to implement the required urls (used in tests)."""
+
     identifier = models.CharField(max_length=200, unique=True)
     content = models.TextField()

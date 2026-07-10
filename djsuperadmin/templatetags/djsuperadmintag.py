@@ -53,7 +53,7 @@ def djsuperadminjs(context):
             os.path.join(superadmin_basedir, "dist", "djsuperadmin.bundle.js"),
             "r",
         ) as js_file:
-            js = '<script src="https://cdn.ckeditor.com/4.12.1/standard/ckeditor.js"></script>'
+            js = '<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>'
             js += (
                 '<script>var djsa_logout_url="%s";var inplace_edit_enabled = %s;%s</script>'
                 % ("", inplace, js_file.read())

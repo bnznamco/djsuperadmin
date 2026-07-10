@@ -1,10 +1,13 @@
 import pytest
+
 from djsuperadmin.templatetags.djsuperadmintag import (
+    djsuperadminjs,
     superadmin_content,
     superadmin_raw_content,
-    djsuperadminjs,
 )
-from testapp.models import Content, ContentWithoutUrls
+from example.website.models import Content, ContentWithoutUrls
+
+pytestmark = pytest.mark.django_db
 
 
 def test_content_rendering_admin_user(rf, admin_user):
@@ -65,3 +68,13 @@ def test_raise_exception_for_not_implemented_urls_in_model(rf, admin_user):
         content.superadmin_patch_url
     with pytest.raises(NotImplementedError):
         superadmin_content({"request": request}, content, "content")
+
+
+def test_default_content_creates_builtin_content(rf, admin_user):
+    """A bare string default falls back to djsuperadmin's own Content model."""
+    request = rf.get("/")
+    request.user = admin_user
+    html = superadmin_content({"request": request}, "Some default content")
+    assert 'class="djsuperadmin"' in html
+    assert "Some default content" in html
+    assert "/djsuperadmin/content/" in html

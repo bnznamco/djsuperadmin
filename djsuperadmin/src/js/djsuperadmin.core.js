@@ -1,5 +1,4 @@
 import { initCKEditor } from './djsuperadmin.ckeditor'
-import 'regenerator-runtime/runtime'
 
 var getCookie = (name) => {
     var value = "; " + document.cookie;
