@@ -117,6 +117,18 @@ and accept `PATCH {"content": ...}` to save. The bare-string tag form uses the
 built-in `Content` model and `ContentApiView`, which requires
 `djsuperadmin.urls` to be included in the project.
 
+**Version history / revert.** An optional third URL, `superadmin_history_url`,
+enables the editor's **⟲ History** panel. If present (surfaced as
+`data-djsa-historyurl`), the editor GETs `{"versions": [{"id", "data",
+"created_at"}, ...]}` and restores a version by simply `PATCH`ing its `data`
+back through the normal save url — revert is a normal save, so it is itself
+undoable and needs no extra endpoint. For the built-in `Content` model this is
+implemented by the `ContentVersion` model (snapshotted in `ContentApiView.patch`,
+capped by `DJSUPERADMIN["MAX_VERSIONS"]`, default 20) and `ContentHistoryApiView`.
+The mixin default is `None`, so other models show no history button unless they
+opt in. This is the camomilla path: camomilla content is a BYO model, so it
+records snapshots server-side and exposes `superadmin_history_url`.
+
 ## Note
 
 `CLAUDE.md` is a thin adapter that defers to this file. Keep guidance here.

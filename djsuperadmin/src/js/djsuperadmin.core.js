@@ -35,6 +35,7 @@ var errorBanner;
 var sunEditorInstance = null;
 var inlineEl = null;
 var editingParent = null;
+var history_content_url = null;
 /**
  * editor mode
  * 0 : bare editor, only a textarea. Edited in place when INPLACE_EDIT is on.
@@ -134,9 +135,11 @@ var generateCacheAttr = function () {
 }
 
 var getContent = function (element) {
+    clickedElement = element;
     var attribute = element.getAttribute("data-djsa-id");
     var get_content_url = element.getAttribute("data-djsa-getcontenturl");
     patch_content_url = element.getAttribute("data-djsa-patchcontenturl");
+    history_content_url = element.getAttribute("data-djsa-historyurl");
     var options = getOptions('GET');
     if (!get_content_url) {
         var url = "/djsuperadmin/contents/" + attribute + "/";
@@ -202,6 +205,140 @@ var markEditing = function (element) {
     if (editingParent) editingParent.classList.add('djsuperadmin-editing');
 };
 
+// ── Edit / history toolbar ───────────────────────────────────────────────────
+// A small pill of icon buttons floats over each editable region: a pencil (open
+// the editor) and — when the content exposes a history url — a clock (open the
+// version list to revert). Built once per element on load, revealed on hover and
+// while editing.
+var PENCIL_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+var HISTORY_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l3 2"/></svg>';
+
+var stripTags = function (html) {
+    var d = document.createElement('div');
+    d.innerHTML = html || '';
+    return (d.textContent || '').replace(/\s+/g, ' ').trim();
+};
+
+var formatWhen = function (iso) {
+    var d = new Date(iso);
+    return isNaN(d) ? iso : d.toLocaleString();
+};
+
+// The toolbar is otherwise hover-only, so an open history panel would vanish the
+// moment the pointer leaves the content. While a panel is open we pin its
+// toolbar visible (.djsa-open) and dismiss it on an outside click instead.
+var onHistoryOutside = function (e) {
+    if (e.target.closest && e.target.closest('.djsa-toolbar')) return;
+    closeAllHistory();
+};
+
+var closeAllHistory = function () {
+    var bars = document.querySelectorAll('.djsa-toolbar.djsa-open');
+    for (var i = 0; i < bars.length; i++) {
+        bars[i].classList.remove('djsa-open');
+        var p = bars[i].querySelector('.djsa-history-panel');
+        if (p) p.style.display = 'none';
+    }
+    document.removeEventListener('mousedown', onHistoryOutside, true);
+};
+
+var makeToolButton = function (icon, label, cls) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'djsa-tool ' + cls;
+    b.title = label;
+    b.setAttribute('aria-label', label);
+    b.innerHTML = icon;
+    return b;
+};
+
+var buildToolbar = function (element) {
+    var host = element.parentNode;
+    if (!host || host.querySelector(':scope > .djsa-toolbar')) return;
+    var bar = document.createElement('div');
+    bar.className = 'djsa-toolbar';
+    // Keep focus in the editor when clicking a tool, so save-on-exit (blur /
+    // outside-click) doesn't fire and tear the editor down mid-click.
+    bar.addEventListener('mousedown', function (e) { e.preventDefault(); });
+
+    var editBtn = makeToolButton(PENCIL_ICON, 'Edit', 'djsa-tool-edit');
+    editBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!editingParent) getContent(element);
+    });
+    bar.appendChild(editBtn);
+
+    if (element.getAttribute('data-djsa-historyurl')) {
+        var histBtn = makeToolButton(HISTORY_ICON, 'Version history', 'djsa-tool-history');
+        var panel = document.createElement('div');
+        panel.className = 'djsa-history-panel';
+        panel.style.display = 'none';
+        histBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (panel.style.display === 'none') {
+                closeAllHistory();
+                openHistory(panel, element);
+                bar.classList.add('djsa-open');
+                document.addEventListener('mousedown', onHistoryOutside, true);
+            } else {
+                closeAllHistory();
+            }
+        });
+        bar.appendChild(histBtn);
+        bar.appendChild(panel);
+    }
+    host.appendChild(bar);
+};
+
+var openHistory = function (panel, element) {
+    var url = element.getAttribute('data-djsa-historyurl');
+    panel.style.display = 'block';
+    panel.innerHTML = '<div class="djsa-history-msg">Loading…</div>';
+    fetch(url + generateCacheAttr(), getOptions('GET'))
+        .then(status).then(json).then(function (data) {
+            var versions = data.versions || [];
+            if (!versions.length) {
+                panel.innerHTML = '<div class="djsa-history-msg">No previous versions yet</div>';
+                return;
+            }
+            panel.innerHTML = '';
+            versions.forEach(function (v) {
+                var item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'djsa-history-item';
+                var when = document.createElement('span');
+                when.className = 'djsa-history-when';
+                when.textContent = formatWhen(v.created_at);
+                var preview = document.createElement('span');
+                preview.className = 'djsa-history-preview';
+                preview.textContent = stripTags(v.data) || '(empty)';
+                item.appendChild(when);
+                item.appendChild(preview);
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeAllHistory();
+                    restoreVersion(element, v.data);
+                });
+                panel.appendChild(item);
+            });
+        }).catch(function (err) {
+            panel.innerHTML = '<div class="djsa-history-msg">Could not load history</div>';
+            console.log(err);
+        });
+};
+
+// Restoring a past version is just a normal save (PATCH) of that body, so it
+// works whether or not the editor is open and is itself undoable.
+var restoreVersion = function (element, body) {
+    clickedElement = element;
+    patch_content_url = element.getAttribute('data-djsa-patchcontenturl');
+    if (!content) content = {};
+    pushContent(body);
+};
+
 var onEscKey = function (event) {
     if (event.key === 'Escape') closeEditor();
 };
@@ -212,6 +349,7 @@ var onEscKey = function (event) {
 var onOutsideDown = function (event) {
     if (!sunEditorInstance) return;
     if (event.target.closest && event.target.closest('.sun-editor')) return;
+    if (event.target.closest && event.target.closest('.djsa-toolbar')) return;
     if (document.querySelector('.sun-editor .se-dialog[style*="display: block"]')) return;
     pushContent(editor_content());
 };
@@ -231,6 +369,8 @@ var closeEditor = () => {
         editingParent.classList.remove('djsuperadmin-editing');
         editingParent = null;
     }
+    // Toolbars are persistent; just collapse any open history panel.
+    closeAllHistory();
     document.removeEventListener('keydown', onEscKey);
     document.removeEventListener('mousedown', onOutsideDown, true);
     if (background) {
@@ -391,4 +531,5 @@ var startEditing = (element) => {
 for (var i = 0; i < classname.length; i++) {
     classname[i].addEventListener('click', handleClick, false);
     classname[i].parentNode.classList.add('djsuperadmin-content')
+    buildToolbar(classname[i]);
 }

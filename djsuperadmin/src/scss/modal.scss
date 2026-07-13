@@ -1,3 +1,8 @@
+// Brand accent used across the editor affordances (outline, editing ring,
+// toolbar, save button). Change these two to re-theme the whole editor.
+$djsa-accent: #fc03a1;
+$djsa-accent-dark: #c90281;
+
 .djsuperadmin-background {
   position: fixed;
   inset: 0;
@@ -86,11 +91,11 @@
 }
 
 .djsuperadmin-btn-save {
-  background: #27347a;
+  background: $djsa-accent;
   color: #f8f8f8;
 
   &:hover {
-    background: #1c2660;
+    background: $djsa-accent-dark;
   }
 }
 
@@ -136,7 +141,7 @@
 
   &:focus {
     outline: none;
-    border-color: #27347a;
+    border-color: $djsa-accent;
   }
 }
 
@@ -186,7 +191,7 @@
   min-height: 15px;
   position: relative;
   border-radius: 6px;
-  outline: 1px dashed rgba(39, 52, 122, 0.4);
+  outline: 1px dashed rgba($djsa-accent, 0.4);
   outline-offset: 3px;
   transition: outline-color 0.15s ease, background 0.15s ease;
 
@@ -197,73 +202,162 @@
   > :last-child {
     margin-bottom: 0;
   }
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2327347a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E") 2 20, text;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fc03a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E") 2 20, text;
 
   &:hover {
-    outline-color: rgba(39, 52, 122, 0.95);
-    background: rgba(39, 52, 122, 0.06);
-  }
-
-  &:hover::after {
-    content: "✏️ Edit";
-    position: absolute;
-    top: 0;
-    right: 8px;
-    transform: translateY(-50%);
-    background: #27347a;
-    color: #fff;
-    font: 600 10px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    letter-spacing: 0.05em;
-    padding: 4px 9px;
-    border-radius: 999px;
-    white-space: nowrap;
-    pointer-events: none;
-    z-index: 1000001;
+    outline-color: rgba($djsa-accent, 0.95);
+    background: rgba($djsa-accent, 0.06);
   }
 }
 
 // ── Editable region: active editing state ───────────────────────────────────
 // A pulsing ring all around the content plus an "Editing" badge, so it is
 // unmistakable which content is currently being edited (raw or WYSIWYG).
-.djsuperadmin-content.djsuperadmin-editing {
+// The content region anchors the floating toolbar (and the editing ring).
+.djsuperadmin-content {
   position: relative;
+}
+
+.djsuperadmin-content.djsuperadmin-editing {
   border-radius: 8px;
-  box-shadow: 0 0 0 2px #27347a, 0 0 0 7px rgba(39, 52, 122, 0.15);
+  box-shadow: 0 0 0 2px $djsa-accent, 0 0 0 7px rgba($djsa-accent, 0.15);
   animation: djsa-editing-pulse 1.6s ease-in-out infinite;
 
-  &::before {
-    content: "✏️ Editing";
-    position: absolute;
-    top: 0;
-    right: 8px;
-    transform: translateY(-50%);
-    background: #27347a;
-    color: #fff;
-    font: 600 11px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    letter-spacing: 0.06em;
-    padding: 5px 11px;
-    border-radius: 999px;
-    white-space: nowrap;
-    z-index: 1000002;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  }
-
-  // don't stack the idle marker/hint on the element being edited
+  // no idle outline on the element being edited
   .djsuperadmin {
     outline: none;
-
-    &:hover::after {
-      display: none;
-    }
   }
 }
 
 @keyframes djsa-editing-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 2px #27347a, 0 0 0 7px rgba(39, 52, 122, 0.15);
+    box-shadow: 0 0 0 2px $djsa-accent, 0 0 0 7px rgba($djsa-accent, 0.15);
   }
   50% {
-    box-shadow: 0 0 0 2px #27347a, 0 0 0 9px rgba(39, 52, 122, 0.3);
+    box-shadow: 0 0 0 2px $djsa-accent, 0 0 0 9px rgba($djsa-accent, 0.3);
   }
+}
+
+// ── Edit / history toolbar ───────────────────────────────────────────────────
+// A pill of icon buttons (pencil = edit, clock = history) grouped at the
+// top-right of the content. Hidden until the region is hovered, edited, or the
+// toolbar itself is focused.
+.djsa-toolbar {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: $djsa-accent;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+  z-index: 1000003;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.djsuperadmin-content:hover > .djsa-toolbar,
+.djsuperadmin-content.djsuperadmin-editing > .djsa-toolbar,
+.djsa-toolbar.djsa-open,
+.djsa-toolbar:focus-within {
+  opacity: 1;
+  visibility: visible;
+}
+
+// While editing, the pencil is redundant and the SunEditor toolbar owns the top
+// edge — hide the pencil and tuck the pill just inside the corner so it clears
+// the editor toolbar.
+.djsuperadmin-editing > .djsa-toolbar {
+  top: 6px;
+  transform: none;
+
+  .djsa-tool-edit {
+    display: none;
+  }
+}
+
+.djsa-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.12s ease;
+
+  svg {
+    display: block;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+}
+
+.djsa-history-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  max-width: 80vw;
+  max-height: 320px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e6e8f0;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  padding: 6px;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+.djsa-history-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f0f1f6;
+  }
+}
+
+.djsa-history-when {
+  display: block;
+  font: 600 11px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: $djsa-accent;
+}
+
+.djsa-history-preview {
+  display: block;
+  font-size: 12px;
+  color: #4b5164;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.djsa-history-msg {
+  padding: 10px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
 }

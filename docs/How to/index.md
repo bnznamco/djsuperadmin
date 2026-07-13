@@ -135,6 +135,32 @@ This is meant to plug into a CMS media library — e.g.
 `IMAGE_GALLERY_URL` at its media API and editors can drop existing media straight
 into the content. (See the `example/` project for a working demo endpoint.)
 
+## Version history & revert
+
+Every save keeps the previous value, so editors can roll back a change. Hovering
+the content shows a toolbar with a **⟲ history** icon (next to the ✏️ edit icon);
+it lists the past versions with a timestamp and preview, and clicking one restores
+it — you can review or revert without even opening the editor.
+
+Reverting is just another save — the value you revert *away from* is snapshotted
+too, so a revert is itself undoable.
+
+For the built-in `Content` model this works out of the box (nothing to
+configure). History is capped to the last 20 versions per content; change that
+with:
+
+```python
+# settings.py
+DJSUPERADMIN = {"INPLACE_EDIT": True, "MAX_VERSIONS": 50}
+```
+
+::: tip Your own model opts in
+The history button only shows when the content exposes a `superadmin_history_url`
+(see [Bring your own content model](#bring-your-own-content-model)). The built-in
+model provides it automatically; your own models add it when you want the
+feature.
+:::
+
 ## Bring your own content model
 
 You don't have to use the built-in `Content` model. Any of your models can be
@@ -212,6 +238,39 @@ urlpatterns = [
 
 That's the whole contract. As long as GET returns `{"content": …}` and PATCH
 accepts `{"content": …}`, the editor works against your model.
+
+### Optional: version history for your model
+
+To light up the **⟲ History** button on your own model, add a third property,
+`superadmin_history_url`, and an endpoint that returns past versions:
+
+```python
+class MyContent(models.Model, DjSuperAdminMixin):
+    body = models.TextField()
+
+    # ...get/patch urls as above...
+
+    @property
+    def superadmin_history_url(self):
+        return f"/api/mycontent/{self.pk}/history"
+```
+
+That endpoint's `GET` must return the versions newest-first:
+
+```json
+{
+  "versions": [
+    { "id": 12, "data": "<p>previous value</p>", "created_at": "2026-07-13T10:00:00" },
+    { "id": 11, "data": "<p>older value</p>",    "created_at": "2026-07-12T09:00:00" }
+  ]
+}
+```
+
+Revert needs no extra endpoint — the editor restores a version by `PATCH`-ing its
+`data` back through your normal save url. You only have to *record* the snapshots
+(e.g. in your PATCH handler, or with `django-reversion`) and expose this list.
+The mixin's default is `None`, so models that don't define it simply show no
+history button.
 
 ## The `{% djsuperadminjs %}` tag
 

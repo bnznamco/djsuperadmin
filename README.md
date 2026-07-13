@@ -141,6 +141,18 @@ modal: raw contents via `contenteditable`, and WYSIWYG contents via an inline Su
 (its toolbar docks above the content while editing; click the toolbar's save button to
 commit, or press <kbd>Esc</kbd> to cancel). Defaults to `False` (modal editing).
 
+### Version history / revert
+
+Every save keeps the previous value. Hovering an editable content shows a toolbar
+(✏️ edit + **⟲ history**); the history icon lists past versions (timestamp + preview)
+and clicking one restores it — reverting is itself an undoable save. Works out of the box for the built-in `Content` model (capped by
+`MAX_VERSIONS`, default 20). Your own models opt in by exposing a
+`superadmin_history_url` — see the [docs](https://lotrekagency.github.io/djsuperadmin/).
+
+```python
+DJSUPERADMIN = {"INPLACE_EDIT": True, "MAX_VERSIONS": 20}
+```
+
 ### Insert images from a media gallery
 
 Point `IMAGE_GALLERY_URL` at an endpoint that returns

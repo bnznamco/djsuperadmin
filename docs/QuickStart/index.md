@@ -86,8 +86,10 @@ rendered, starting with `Hello world` as its value.
 1. Log in at `/admin/` as a **superuser**.
 2. Open the page. Superusers see the content wrapped in an editable element
    (class `djsuperadmin`); everyone else just sees the plain value.
-3. **Double-click** the text to open the WYSIWYG editor, make your changes, then
-   click outside (or the save button) to store them — shown to all visitors.
+3. Hover the content — a small toolbar appears with a **✏️ edit** icon (and a
+   **⟲ history** icon if versioning is on). Click edit (or double-click the text)
+   to open the WYSIWYG editor, make your changes, then click outside (or the save
+   button) to store them — shown to all visitors.
 
 That's it — you have a content your editors can change without touching code or
 the admin.

@@ -15,6 +15,10 @@ def _get_obj_span(obj, attribute, placeholder, editor_mode):
     html += ' data-djsa-id="%s"' % str(obj.id)
     html += ' data-djsa-getcontenturl="%s"' % str(obj.superadmin_get_url)
     html += ' data-djsa-patchcontenturl="%s"' % str(obj.superadmin_patch_url)
+    # Optional: only models exposing a history url get the revert/history panel.
+    history_url = getattr(obj, "superadmin_history_url", None)
+    if history_url:
+        html += ' data-djsa-historyurl="%s"' % str(history_url)
     html += ">%s</%s>" % (getattr(obj, attribute, placeholder), tag)
     return html
 

@@ -29,6 +29,10 @@ class Content(models.Model, DjSuperAdminMixin):
     def superadmin_patch_url(self):
         return reverse("djsuperadmin-content-api", kwargs={"uuid": self.id})
 
+    @property
+    def superadmin_history_url(self):
+        return reverse("djsuperadmin-content-history-api", kwargs={"uuid": self.id})
+
     @staticmethod
     def get_from_default_data(data, *args, **kwargs):
         content = None
@@ -42,3 +46,16 @@ class Content(models.Model, DjSuperAdminMixin):
             content.data = data
             content.save()
         return content
+
+
+class ContentVersion(models.Model):
+    """A previous value of a Content, snapshotted before it was overwritten."""
+
+    content = models.ForeignKey(
+        Content, related_name="versions", on_delete=models.CASCADE
+    )
+    data = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at", "-id"]
