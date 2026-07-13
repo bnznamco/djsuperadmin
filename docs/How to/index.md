@@ -64,10 +64,10 @@ on one of your own models.
 </article>
 ```
 
-Superusers see an editable `<span class="djsuperadmin">…</span>`; everyone else
-sees the plain field value.
+Superusers see an editable element with class `djsuperadmin` (a `<div>` for
+WYSIWYG, a `<span>` for raw); everyone else sees the plain field value.
 
-For a WYSIWYG (CKEditor) editor use `superadmin_content`. For a plain textarea —
+For a WYSIWYG (SunEditor) editor use `superadmin_content`. For a plain textarea —
 good for snippets, code, or anything where you don't want markup — use the raw
 variant:
 
@@ -81,17 +81,59 @@ Note that for the model-field form to actually save, your model must expose the
 
 ## In-place editing
 
-By default, **raw** contents open in a small modal for editing. Set the
-`INPLACE_EDIT` option to edit them directly on the page via `contenteditable`
-instead:
+By default, contents open in a small modal for editing. Set the `INPLACE_EDIT`
+option to edit **directly on the page** instead:
 
 ```python
 # settings.py
 DJSUPERADMIN = {"INPLACE_EDIT": True}
 ```
 
-The default is `False`. This affects raw contents (`superadmin_raw_content`);
-the WYSIWYG editor always uses its own overlay.
+The default is `False`. When on:
+
+- **raw** contents (`superadmin_raw_content`) become `contenteditable`;
+- **WYSIWYG** contents (`superadmin_content`) become an inline SunEditor — its
+  toolbar docks above the content while editing. **Commit** by clicking anywhere
+  outside the editor, or with the toolbar's save button; **cancel** with
+  <kbd>Esc</kbd>. The editor grows to fit its content.
+
+::: tip WYSIWYG renders as a `<div>`
+`superadmin_content` produces block HTML (paragraphs, images), so it is wrapped
+in a `<div>`, not a `<span>`. Place it in a **block context** — e.g.
+`<div>{% superadmin_content ... %}</div>` — not inside a `<p>`, `<h1>`, or other
+inline context, or the browser will eject the block content from the wrapper.
+`superadmin_raw_content` stays an inline `<span>`.
+:::
+
+## Insert images from a media gallery
+
+Give the WYSIWYG editor an image-gallery endpoint and its toolbar gains an
+"insert image from gallery" button:
+
+```python
+# settings.py
+DJSUPERADMIN = {
+    "INPLACE_EDIT": True,
+    "IMAGE_GALLERY_URL": "/api/camomilla/media/",  # your media list endpoint
+    # "IMAGE_UPLOAD_URL": "/api/camomilla/media/upload/",  # optional, for uploads
+}
+```
+
+The endpoint must return JSON in the shape SunEditor expects:
+
+```json
+{
+  "result": [
+    { "src": "https://.../photo-1.jpg", "name": "Photo 1" },
+    { "src": "https://.../photo-2.jpg", "name": "Photo 2" }
+  ]
+}
+```
+
+This is meant to plug into a CMS media library — e.g.
+[camomilla](https://github.com/camomillacms/camomilla-core)'s media gallery: point
+`IMAGE_GALLERY_URL` at its media API and editors can drop existing media straight
+into the content. (See the `example/` project for a working demo endpoint.)
 
 ## Bring your own content model
 
@@ -185,8 +227,19 @@ This tag wires everything together. Place it **once**, in your page footer:
 </body>
 ```
 
-It injects **CKEditor 4 (loaded from a CDN)** plus the DjSuperAdmin JS bundle
-that turns the wrapped spans into editors.
+It injects the DjSuperAdmin JS bundle that turns the wrapped spans into editors.
+The bundle **lazy-loads [SunEditor](https://github.com/JiHong88/SunEditor) from a
+CDN the first time** a WYSIWYG editor is opened, so pages stay light until you
+actually edit. To self-host the editor (e.g. under a strict CSP), point it at
+your own copy:
+
+```python
+# settings.py
+DJSUPERADMIN = {
+    "SUNEDITOR_JS": "/static/vendor/suneditor.min.js",
+    "SUNEDITOR_CSS": "/static/vendor/suneditor.min.css",
+}
+```
 
 It renders **only for authenticated superusers** — for every other visitor
 (anonymous users, non-superuser staff) it outputs an empty string, so there is

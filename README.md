@@ -11,8 +11,9 @@
 
 <img src="https://github.com/lotrekagency/djsuperadmin/raw/master/demo.gif" width="100%" alt="djsuperadmin demo" />
 
-Superusers get an inline editor (CKEditor 4, loaded from a CDN) right on the rendered
-page. Everyone else just sees the plain content.
+Superusers get an inline editor ([SunEditor](https://github.com/JiHong88/SunEditor),
+lazy-loaded from a CDN on first edit) right on the rendered page. Everyone else just
+sees the plain content.
 
 ## Compatibility
 
@@ -52,8 +53,8 @@ urlpatterns = [
 ```
 
 Finally, load the template tags and drop `{% djsuperadminjs %}` **once** in your footer.
-It injects CKEditor + the djsuperadmin bundle, and renders **only** for authenticated
-superusers (empty string for everyone else):
+It injects the djsuperadmin bundle (which lazy-loads SunEditor on first edit), and
+renders **only** for authenticated superusers (empty string for everyone else):
 
 ```html
 {% load djsuperadmintag %}
@@ -88,7 +89,8 @@ snippets. Note the tag name is `superadmin_raw_content`:
 ### Bind to a model attribute
 
 Both tags also accept an object and an attribute name. Superusers see an editable
-`<span class="djsuperadmin">`, everyone else sees the plain value:
+element (a `<div class="djsuperadmin">` for WYSIWYG, a `<span>` for raw), everyone
+else sees the plain value:
 
 ```html
 {% superadmin_content my_object 'body' %}
@@ -134,8 +136,35 @@ Then render it like any other object:
 DJSUPERADMIN = {"INPLACE_EDIT": True}
 ```
 
-When `INPLACE_EDIT` is `True`, **raw** contents are edited in place via `contenteditable`
-instead of a modal. Defaults to `False`.
+When `INPLACE_EDIT` is `True`, contents are edited **right on the page** instead of in a
+modal: raw contents via `contenteditable`, and WYSIWYG contents via an inline SunEditor
+(its toolbar docks above the content while editing; click the toolbar's save button to
+commit, or press <kbd>Esc</kbd> to cancel). Defaults to `False` (modal editing).
+
+### Insert images from a media gallery
+
+Point `IMAGE_GALLERY_URL` at an endpoint that returns
+`{"result": [{"src": "...", "name": "..."}, ...]}` and the WYSIWYG toolbar gains an
+"insert image from gallery" button. This is designed to plug into a CMS media
+library — e.g. [camomilla](https://github.com/camomillacms/camomilla-core)'s media
+gallery. `IMAGE_UPLOAD_URL` (optional) enables direct uploads.
+
+```python
+DJSUPERADMIN = {
+    "INPLACE_EDIT": True,
+    "IMAGE_GALLERY_URL": "/api/camomilla/media/",  # returns the media list as JSON
+}
+```
+
+The WYSIWYG editor (SunEditor) is lazy-loaded from jsDelivr. To self-host it — e.g.
+under a strict Content-Security-Policy — override the URLs:
+
+```python
+DJSUPERADMIN = {
+    "SUNEDITOR_JS": "/static/vendor/suneditor.min.js",
+    "SUNEDITOR_CSS": "/static/vendor/suneditor.min.css",
+}
+```
 
 ## Development
 

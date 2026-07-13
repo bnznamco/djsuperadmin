@@ -14,7 +14,7 @@ def test_content_rendering_admin_user(rf, admin_user):
     content = Content.objects.create(identifier="1", content="Try")
     request = rf.get("/")
     request.user = admin_user
-    expected_html = '<span class="djsuperadmin" data-djsa-mode="1" data-djsa-id="1" data-djsa-getcontenturl="/api/content" data-djsa-patchcontenturl="/api/content">Try</span>'
+    expected_html = '<div class="djsuperadmin" data-djsa-mode="1" data-djsa-id="1" data-djsa-getcontenturl="/api/content" data-djsa-patchcontenturl="/api/content">Try</div>'
     assert superadmin_content({"request": request}, content, "content") == expected_html
 
 
@@ -48,7 +48,10 @@ def test_content_raw_rendering_simple_user(rf, django_user_model):
 def test_djsuperadminjs_rendering_admin_user(rf, admin_user):
     request = rf.get("/")
     request.user = admin_user
-    assert "<script src" in djsuperadminjs({"request": request})
+    output = djsuperadminjs({"request": request})
+    assert "<script>" in output
+    assert "inplace_edit_enabled" in output
+    assert "djsa_suneditor_js" in output
 
 
 def test_djsuperadminjs_rendering_simple_user(rf, django_user_model):

@@ -6,8 +6,8 @@ end-user library docs, see `docs/` and the [README](README.md).
 `djsuperadmin` is a tiny Django app (no runtime dependencies except Django) that
 lets superusers edit page contents inline in the browser. It works with Django
 2.0 through the latest release (tested 2.2 → 6.0) on Python 3.6+, is MIT
-licensed, and ships a small JS bundle (built with Vite) that injects
-[CKEditor 4](https://ckeditor.com/) from a CDN for the WYSIWYG editor.
+licensed, and ships a small JS bundle (built with Vite) that lazy-loads
+[SunEditor](https://github.com/JiHong88/SunEditor) from a CDN for the WYSIWYG editor.
 
 ## Repository layout
 
@@ -89,15 +89,26 @@ run the tests locally first.
 
 ## How it works
 
-The template tags render for superusers only. `{% superadmin_content obj attr %}`
-(and the raw variant) emit an editable `<span class="djsuperadmin">` carrying the
-object's `superadmin_get_url` and `superadmin_patch_url`. `{% djsuperadminjs %}`,
-placed once in the footer, injects CKEditor and the bundle.
+The template tags render for superusers only. They emit an editable element with
+class `djsuperadmin` carrying the object's `superadmin_get_url` and
+`superadmin_patch_url`: `superadmin_content` (WYSIWYG) uses a **`<div>`** because
+its content is block-level HTML; `superadmin_raw_content` uses an inline
+**`<span>`**. `{% djsuperadminjs %}`, placed once in the footer, injects the
+bundle (and the config globals).
 
 The bundle (`djsuperadmin/dist/djsuperadmin.bundle.js`) wires click handlers to
-those spans, opens the CKEditor (or a raw textarea) editor, `GET`s the current
-value as JSON `{"content": ...}`, and `PATCH`es the edited value back as
-`{"content": ...}`.
+those elements and opens an editor. With `INPLACE_EDIT` on, editing happens on the
+page: raw contents via `contenteditable`, WYSIWYG via an inline **SunEditor**
+(mode `inline`, auto-growing; committed by clicking outside or the toolbar save
+button, cancelled with Esc). With it off, a modal is used instead. SunEditor is lazy-loaded from a CDN on first edit — URLs overridable
+via `DJSUPERADMIN["SUNEDITOR_JS"|"SUNEDITOR_CSS"]`. If `DJSUPERADMIN["IMAGE_GALLERY_URL"]`
+is set, the WYSIWYG toolbar gets an image-gallery button (for CMS media libraries
+like camomilla). The editor `GET`s the current value as JSON `{"content": ...}` and
+`PATCH`es the edited value back as `{"content": ...}`.
+
+The SunEditor config lives in `buildEditorConfig()` in `djsuperadmin/src/js/djsuperadmin.core.js`
+— toolbar buttons, image gallery, etc. are added there. Rebuild the bundle after
+changing any frontend source.
 
 Any model can expose those URLs by mixing in `DjSuperAdminMixin` and defining
 `superadmin_get_url` / `superadmin_patch_url` (the mixin raises

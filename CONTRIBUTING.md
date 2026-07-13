@@ -97,8 +97,8 @@ content regions inline on the page.
 ### Rebuilding the JS bundle
 
 djsuperadmin ships a small JS bundle (built with [Vite](https://vitejs.dev/)) that is
-injected into the page by the `{% djsuperadminjs %}` tag; it loads CKEditor 4 from a
-CDN for the WYSIWYG editor. If you change anything under the frontend sources, rebuild
+injected into the page by the `{% djsuperadminjs %}` tag; it lazy-loads SunEditor from
+a CDN for the WYSIWYG editor. If you change anything under the frontend sources, rebuild
 the bundle:
 
 ```bash

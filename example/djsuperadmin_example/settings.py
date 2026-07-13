@@ -78,8 +78,13 @@ STATIC_URL = "/static/"
 # Ignored by Django < 3.2, honoured from 3.2 onwards.
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# djsuperadmin configuration. Set INPLACE_EDIT to enable contenteditable
-# in-place editing for raw contents.
+# djsuperadmin configuration.
+# - INPLACE_EDIT: edit contents on the page (raw = contenteditable, WYSIWYG =
+#   inline SunEditor) instead of a modal.
+# - IMAGE_GALLERY_URL: an endpoint returning a media gallery for the editor's
+#   "insert image" button. Here it's the demo endpoint; in camomilla you would
+#   point it at the media gallery API.
 DJSUPERADMIN = {
     "INPLACE_EDIT": True,
+    "IMAGE_GALLERY_URL": "/djsa-demo-gallery/",
 }

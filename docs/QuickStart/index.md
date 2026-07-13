@@ -65,7 +65,7 @@ In your base template, load the template tag library and drop
 </html>
 ```
 
-`{% djsuperadminjs %}` injects the DjSuperAdmin bundle (and CKEditor from a CDN).
+`{% djsuperadminjs %}` injects the DjSuperAdmin bundle (which lazy-loads SunEditor from a CDN on first edit).
 It renders **only for authenticated superusers** — for everyone else it outputs
 nothing.
 
@@ -84,10 +84,10 @@ rendered, starting with `Hello world` as its value.
 ## 6. Edit it
 
 1. Log in at `/admin/` as a **superuser**.
-2. Open the page. Superusers see the content wrapped in an editable
-   `<span class="djsuperadmin">`; everyone else just sees the plain value.
-3. **Double-click** the text to open the WYSIWYG editor, make your changes, and
-   save. The new value is stored and shown to all visitors.
+2. Open the page. Superusers see the content wrapped in an editable element
+   (class `djsuperadmin`); everyone else just sees the plain value.
+3. **Double-click** the text to open the WYSIWYG editor, make your changes, then
+   click outside (or the save button) to store them — shown to all visitors.
 
 That's it — you have a content your editors can change without touching code or
 the admin.

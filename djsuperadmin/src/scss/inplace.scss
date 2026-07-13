@@ -1,13 +1,8 @@
-span.djsuperadmin {
+.djsuperadmin {
+    // While typing in a raw content, an I-beam is the right affordance.
+    // The "active editing" ring/badge lives on the parent (.djsuperadmin-editing).
     &[contenteditable="true"] {
         cursor: text;
-        outline: 0px solid transparent;
-        animation: linearGradientMove .5s infinite linear;
-    }
-}
-// dashed border animation
-@keyframes linearGradientMove {
-    100% {
-        background-position: 6px 0, -6px 100%, 0 -6px, 100% 6px;
+        outline: none;
     }
 }

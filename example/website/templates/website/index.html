@@ -11,7 +11,8 @@
      page: every content below becomes editable in place.</p>
 
   <h2>WYSIWYG content</h2>
-  <p>{% superadmin_content 'Some default content' %}</p>
+  {# WYSIWYG content is block-level, so give it a block container (not <p>). #}
+  <div>{% superadmin_content 'Some default content' %}</div>
 
   <h2>Raw content</h2>
   <p>{% superadmin_raw_content 'Some raw default content' %}</p>
