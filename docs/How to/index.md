@@ -272,6 +272,29 @@ Revert needs no extra endpoint — the editor restores a version by `PATCH`-ing 
 The mixin's default is `None`, so models that don't define it simply show no
 history button.
 
+## Headless usage (SPA / SSR frontends)
+
+The template tags are a convenience for Django-rendered pages, but the editor
+itself is framework-agnostic. Any frontend can drive it by reproducing what the
+tags emit:
+
+1. Render an element with class `djsuperadmin` carrying the same data attributes
+   — `data-djsa-mode` (`1` WYSIWYG / `0` raw), `data-djsa-id`,
+   `data-djsa-getcontenturl`, `data-djsa-patchcontenturl`, and optionally
+   `data-djsa-historyurl` — around the current HTML value.
+2. Load the built bundle (`djsuperadmin/dist/djsuperadmin.bundle.js`) and set its
+   config globals (`inplace_edit_enabled`, `djsa_suneditor_js/css`,
+   `djsa_image_gallery_url`, …) before it, exactly as `{% djsuperadminjs %}` does.
+
+Only render the markup and load the bundle for users allowed to edit. The bundle
+saves by `fetch`ing your endpoints with the Django **session cookie +
+`X-CSRFToken`**, so the browser must be **same-origin** with the backend (e.g.
+reverse-proxy `/api`, `/admin`, `/static` to Django).
+
+> A ready-made binding for **Astro + camomilla** lives in its own
+> [astro-camomilla-integration](https://github.com/camomillacms/astro-camomilla-integration)
+> project — this repo stays framework-agnostic.
+
 ## The `{% djsuperadminjs %}` tag
 
 This tag wires everything together. Place it **once**, in your page footer:
