@@ -67,7 +67,9 @@ def djsuperadminjs(context):
         image_gallery_url = DJSUPERADMIN_SETTINGS.get("IMAGE_GALLERY_URL", "")
         image_upload_url = DJSUPERADMIN_SETTINGS.get("IMAGE_UPLOAD_URL", "")
         with open(
-            os.path.join(superadmin_basedir, "dist", "djsuperadmin.bundle.js"),
+            os.path.join(
+                superadmin_basedir, "static", "djsuperadmin", "djsuperadmin.bundle.js"
+            ),
             "r",
         ) as js_file:
             js = (

@@ -15,7 +15,7 @@ licensed, and ships a small JS bundle (built with Vite) that lazy-loads
 | --- | --- |
 | `djsuperadmin/` | The Django package (models, mixins, template tags, API view, urls). |
 | `djsuperadmin/src/` | JS/SCSS source, built by Vite. |
-| `djsuperadmin/dist/djsuperadmin.bundle.js` | The built bundle that gets injected into pages. **Generated — do not hand-edit.** |
+| `djsuperadmin/static/djsuperadmin/djsuperadmin.bundle.js` | The built bundle. Inlined into pages by `{% djsuperadminjs %}`, and — being under `static/` — also served by Django at `/static/djsuperadmin/…` for headless frontends. **Generated — do not hand-edit.** |
 | `example/` | Demo Django project; also the test project. Settings module: `example.djsuperadmin_example.settings`. |
 | `tests/` | pytest + pytest-django suite. |
 | `docs/` | VitePress documentation. |
@@ -32,7 +32,7 @@ make install     # uv sync --dev && pnpm install
 make test        # flake8 djsuperadmin, then pytest with coverage
 make lint        # flake8 djsuperadmin
 make format      # black .
-make build       # pnpm run build -> rebuilds djsuperadmin/dist/djsuperadmin.bundle.js
+make build       # pnpm run build -> rebuilds djsuperadmin/static/djsuperadmin/djsuperadmin.bundle.js
 make migrations  # uv run python manage.py makemigrations
 make docs-dev    # VitePress dev server
 make docs-build  # build docs
@@ -56,7 +56,7 @@ authenticated superusers.
 ## Frontend build
 
 The browser code lives in `djsuperadmin/src/` and is bundled by Vite to
-`djsuperadmin/dist/djsuperadmin.bundle.js`. **Rebuild after any change to
+`djsuperadmin/static/djsuperadmin/djsuperadmin.bundle.js`. **Rebuild after any change to
 `djsuperadmin/src/`:**
 
 ```bash
@@ -96,7 +96,7 @@ its content is block-level HTML; `superadmin_raw_content` uses an inline
 **`<span>`**. `{% djsuperadminjs %}`, placed once in the footer, injects the
 bundle (and the config globals).
 
-The bundle (`djsuperadmin/dist/djsuperadmin.bundle.js`) wires click handlers to
+The bundle (`djsuperadmin/static/djsuperadmin/djsuperadmin.bundle.js`) wires click handlers to
 those elements and opens an editor. With `INPLACE_EDIT` on, editing happens on the
 page: raw contents via `contenteditable`, WYSIWYG via an inline **SunEditor**
 (mode `inline`, auto-growing; committed by clicking outside or the toolbar save

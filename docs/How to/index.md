@@ -282,9 +282,12 @@ tags emit:
    — `data-djsa-mode` (`1` WYSIWYG / `0` raw), `data-djsa-id`,
    `data-djsa-getcontenturl`, `data-djsa-patchcontenturl`, and optionally
    `data-djsa-historyurl` — around the current HTML value.
-2. Load the built bundle (`djsuperadmin/dist/djsuperadmin.bundle.js`) and set its
-   config globals (`inplace_edit_enabled`, `djsa_suneditor_js/css`,
-   `djsa_image_gallery_url`, …) before it, exactly as `{% djsuperadminjs %}` does.
+2. Load the built bundle and set its config globals (`inplace_edit_enabled`,
+   `djsa_suneditor_js/css`, `djsa_image_gallery_url`, …) before it, exactly as
+   `{% djsuperadminjs %}` does. Because the bundle lives under the app's `static/`
+   directory, Django serves it at `/static/djsuperadmin/djsuperadmin.bundle.js`
+   (run `collectstatic`), so a frontend can just
+   `<script src="/static/djsuperadmin/djsuperadmin.bundle.js">` it.
 
 Only render the markup and load the bundle for users allowed to edit. The bundle
 saves by `fetch`ing your endpoints with the Django **session cookie +

@@ -69,7 +69,7 @@ version = {attr = "djsuperadmin.__version__"}
 include = ["djsuperadmin*"]
 
 [tool.setuptools.package-data]
-djsuperadmin = ["dist/*"]
+djsuperadmin = ["static/djsuperadmin/*"]
 
 [tool.coverage.run]
 omit = ["*/**/apps.py", "*/migrations/*", "example/*", "manage.py"]

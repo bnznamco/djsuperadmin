@@ -189,7 +189,7 @@ make install      # uv sync --dev && pnpm install
 make test         # flake8 + pytest with coverage
 make format       # black .
 make lint         # flake8 djsuperadmin
-make build        # rebuild djsuperadmin/dist/djsuperadmin.bundle.js
+make build        # rebuild djsuperadmin/static/djsuperadmin/djsuperadmin.bundle.js
 make migrations   # uv run python manage.py makemigrations
 make docs-dev     # VitePress docs (also: docs-build, docs-preview)
 ```
