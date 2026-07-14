@@ -1,12 +1,16 @@
-from .views import ContentViewSet
-from django.conf.urls import url, include
-from rest_framework import routers
+from django.urls import path
 
-
-router = routers.DefaultRouter()
-
-router.register(r'contents', ContentViewSet)
+from djsuperadmin.api import ContentApiView, ContentHistoryApiView
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
+    path(
+        "djsuperadmin/content/<slug:uuid>/",
+        ContentApiView.as_view(),
+        name="djsuperadmin-content-api",
+    ),
+    path(
+        "djsuperadmin/content/<slug:uuid>/history/",
+        ContentHistoryApiView.as_view(),
+        name="djsuperadmin-content-history-api",
+    ),
 ]

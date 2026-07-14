@@ -1,0 +1,89 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.2"]
+
+[project]
+name = "djsuperadmin"
+description = "Edit contents directly on your page with Django"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {text = "MIT"}
+authors = [{name = "Lotrèk", email = "dimmitutto@lotrek.it"}]
+keywords = ["cms", "django", "api cms"]
+requires-python = ">=3.6"
+dynamic = ["version"]
+dependencies = [
+  "Django>=2.0",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Framework :: Django",
+  "Framework :: Django :: 2.0",
+  "Framework :: Django :: 2.1",
+  "Framework :: Django :: 2.2",
+  "Framework :: Django :: 3.0",
+  "Framework :: Django :: 3.1",
+  "Framework :: Django :: 3.2",
+  "Framework :: Django :: 4.0",
+  "Framework :: Django :: 4.1",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.0",
+  "Framework :: Django :: 5.1",
+  "Framework :: Django :: 5.2",
+  "Topic :: Internet :: WWW/HTTP :: Site Management",
+]
+
+[project.urls]
+Homepage = "https://github.com/lotrekagency/djsuperadmin"
+
+# Dev tooling runs on modern Python only; markers keep `uv lock` resolvable
+# down to the package's 3.6 floor without dropping the wide runtime support.
+[dependency-groups]
+dev = [
+  "pytest>=3.9.1",
+  "pytest-django",
+  "pytest-cov",
+  "coverage",
+  "flake8",
+  "black; python_version >= '3.8'",
+  "python-semantic-release==10.4.1; python_version >= '3.8'",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "djsuperadmin.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["djsuperadmin*"]
+
+[tool.setuptools.package-data]
+djsuperadmin = ["static/djsuperadmin/*"]
+
+[tool.coverage.run]
+omit = ["*/**/apps.py", "*/migrations/*", "example/*", "manage.py"]
+
+[tool.semantic_release]
+version_variables = ["djsuperadmin/__init__.py:__version__"]
+
+[tool.semantic_release.branches.master]
+match = "master"
+prerelease = false
+
+[tool.semantic_release.changelog]
+mode = "update"
+
+[tool.semantic_release.changelog.default_templates]
+changelog_file = "CHANGELOG.md"
+output_format = "md"

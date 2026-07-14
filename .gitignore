@@ -1,5 +1,32 @@
 *.pyc
-.vscode
-__pycache__
-*.egg-info
-node_modules/*
+*.pyo
+__pycache__/
+*.egg-info/
+
+# Virtualenvs & Python build output (root-level only, so djsuperadmin/dist stays tracked)
+.venv/
+/build/
+/dist/
+
+# Coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Node & docs build artifacts
+node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Docs pages generated from root files by scripts/sync-docs-from-root.sh
+docs/Changelog/index.md
+docs/Contribute/index.md
+docs/License/index.md
+
+# Example project database
+example/db.sqlite3
+
+# Editors / OS
+.vscode/
+.DS_Store

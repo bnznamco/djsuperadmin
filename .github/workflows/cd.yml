@@ -1,0 +1,65 @@
+name: 🚀 Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      noop:
+        description: "Run in dry-run (noop) mode?"
+        required: false
+        default: false
+        type: boolean
+      verbosity:
+        description: "Verbosity level for semantic release"
+        required: false
+        default: "1"
+        options: ["0", "1", "2", "3"]
+        type: choice
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    concurrency: release
+    name: Release to PyPI 🐍
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: 📌 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🗂️ Generate version and changelog with Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v10
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          no_operation_mode: ${{ github.event.inputs.noop || 'false' }}
+          verbosity: ${{ github.event.inputs.verbosity || 1 }}
+
+      - name: 🚚 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🪢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 🎨 Build the frontend bundle
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
+
+      - name: 🚧 Setup build environment
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: 📦 Build package distributions
+        run: uv build
+
+      - name: 📤 Publish package distributions to PyPI
+        if: ${{ github.event.inputs.noop != 'true' }}
+        uses: pypa/gh-action-pypi-publish@release/v1

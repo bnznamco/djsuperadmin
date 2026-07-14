@@ -1,0 +1,101 @@
+name: 🧪 Test and Coverage
+
+# djsuperadmin has no runtime dependencies other than Django, so the suite runs
+# against SQLite across the full supported Django range. Dependencies and Python
+# versions are managed with uv. Django 2.0/2.1 remain supported (declared in
+# pyproject.toml) but are not exercised here because their max Python (3.7) is no
+# longer provided by modern runners; Django 2.2 is the oldest line we can test.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { python-version: "3.8", django-version: "2.2" }
+          - { python-version: "3.9", django-version: "2.2" }
+          - { python-version: "3.9", django-version: "3.2" }
+          - { python-version: "3.10", django-version: "3.2" }
+          - { python-version: "3.10", django-version: "4.2" }
+          - { python-version: "3.11", django-version: "4.2" }
+          - { python-version: "3.12", django-version: "4.2" }
+          - { python-version: "3.10", django-version: "5.1" }
+          - { python-version: "3.11", django-version: "5.2" }
+          - { python-version: "3.12", django-version: "5.2" }
+          - { python-version: "3.13", django-version: "5.2" }
+          - { python-version: "3.12", django-version: "6.0" }
+          - { python-version: "3.13", django-version: "6.0" }
+    env:
+      UV_CACHE_DIR: /tmp/.uv-cache
+    name: 🪶 Py ${{ matrix.python-version }} / Dj ${{ matrix.django-version }}
+    steps:
+      - name: 📌 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup uv + Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: 📦 Install dependencies (Django ${{ matrix.django-version }})
+        run: |
+          uv add --dev "Django~=${{ matrix.django-version }}.0"
+          uv sync --dev
+
+      - name: 🧪 Test with pytest and calculate coverage
+        env:
+          COVERAGE_FILE: .coverage.${{ matrix.python-version }}-${{ matrix.django-version }}
+        run: make test
+
+      - name: 🗜️ Minimize uv cache
+        run: uv cache prune --ci
+
+      - name: 📤 Upload coverage data
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data-${{ matrix.python-version }}-${{ matrix.django-version }}
+          path: .coverage.*
+          include-hidden-files: true
+
+  coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    name: 🏖️ Combine coverage and upload to Codecov
+    steps:
+      - name: 📌 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📦 Install coverage
+        run: python -m pip install --upgrade coverage
+
+      - name: 📇 Download coverage data
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-data-*
+          merge-multiple: true
+
+      - name: 📒 Combine coverage
+        run: |
+          coverage combine
+          coverage report -m --skip-covered --skip-empty | sed 's/^/    /' >> $GITHUB_STEP_SUMMARY
+          coverage xml
+
+      - name: 🏖️ Upload to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false

@@ -1,23 +1,61 @@
+import hashlib
+import os
+
 from django.db import models
-from hvad.models import TranslatableModel, TranslatedFields
-from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
+
+from djsuperadmin.mixins import DjSuperAdminMixin
 
 
-class BaseContent(TranslatableModel):
-    identifier = models.CharField(max_length=200)
-    translations = TranslatedFields(
-        permalink=models.CharField(max_length=200, blank=True, null=True),
-        content=models.TextField())
+def make_random_id():
+    return hashlib.sha256(os.urandom(56)).hexdigest()
+
+
+class Content(models.Model, DjSuperAdminMixin):
+    id = models.CharField(
+        max_length=64,
+        default=make_random_id,
+        primary_key=True,
+        unique=True,
+        editable=False,
+    )
+    data = models.TextField(null=True, blank=True)
+
+    @property
+    def superadmin_get_url(self):
+        return reverse("djsuperadmin-content-api", kwargs={"uuid": self.id})
+
+    @property
+    def superadmin_patch_url(self):
+        return reverse("djsuperadmin-content-api", kwargs={"uuid": self.id})
+
+    @property
+    def superadmin_history_url(self):
+        return reverse("djsuperadmin-content-history-api", kwargs={"uuid": self.id})
+
+    @staticmethod
+    def get_from_default_data(data, *args, **kwargs):
+        content = None
+        digest = hashlib.sha256(data.encode("utf-8")).hexdigest()
+        if "context" in kwargs:
+            content_cache = dict(kwargs["context"]).get("_djsuperadmin_content_prefetch", [])
+            content = next((c for c in content_cache if getattr(c, "id", None) == digest), None)
+        if content is None:
+            content, _ = Content.objects.get_or_create(id=digest)
+        if content.data is None:
+            content.data = data
+            content.save()
+        return content
+
+
+class ContentVersion(models.Model):
+    """A previous value of a Content, snapshotted before it was overwritten."""
+
+    content = models.ForeignKey(
+        Content, related_name="versions", on_delete=models.CASCADE
+    )
+    data = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        abstract = True
-        permissions = (
-            ("read_content", _("Can read content")),
-        )
-
-    def __str__(self):
-        return self.identifier
-
-
-class Content(BaseContent):
-    translations = TranslatedFields()
+        ordering = ["-created_at", "-id"]

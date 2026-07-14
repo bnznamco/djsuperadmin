@@ -1,3 +1,2 @@
-@import "~quill/dist/quill.snow.css";
-@import "~quill/dist/quill.core.css";
-@import "./modal.scss";
+@use "./modal.scss";
+@use "./inplace.scss";

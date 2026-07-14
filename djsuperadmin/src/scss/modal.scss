@@ -1,70 +1,363 @@
-.djsuperadmin-content {
-  border: 2px #ff5050 dotted;
-  border-radius: 6px;
-  padding: 0.2rem .5rem;
-}
+// Brand accent used across the editor affordances (outline, editing ring,
+// toolbar, save button). Change these two to re-theme the whole editor.
+$djsa-accent: #fc03a1;
+$djsa-accent-dark: #c90281;
+
 .djsuperadmin-background {
   position: fixed;
-  top: 0;
+  inset: 0;
   width: 100%;
   height: 100vh;
-  background: #4a4a4aa1;
-  z-index: 100000000000;
-}
-.djsuperadmin-logout {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  background: black;
-  color: white;
-  text-decoration: none;
-  border-radius: 15px;
-  font-size: large;
-  font-family: monospace;
-  padding: 10px;
-  z-index: 100000000000;
-}
-.djsuperadmin-editor {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 35rem;
-  height: 20rem;
-}
-.djsuperadmin-save {
-  background: #78a6e4;
-  color: white;
-  font-family: monospace;
-  padding: 0.5rem;
-  border: 1px solid;
-  border-radius: 1rem;
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-  margin-top: 1rem;
-  cursor: pointer;
-}
-.raw-editor {
-  background: white;
-  width: 100%;
-  min-height: 15rem;
-  font-size: 1.5rem;
-  text-align: center;
-  display: block;
-  border-radius: .5rem;
-}
-.ql-container {
-  background: white;
-}
-.ql-toolbar {
-  background: white;
+  background: rgba(6, 10, 30, 0.77);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
-span.djsuperadmin{
-  z-index: 1000000;
+.djsuperadmin-editor {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  width: 720px;
+  max-width: 100%;
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.djsuperadmin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e6e8f0;
+}
+
+.djsuperadmin-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1f36;
+  letter-spacing: 0.02em;
+}
+
+.djsuperadmin-close {
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0 6px;
+  border-radius: 6px;
+
+  &:hover {
+    color: #1a1f36;
+    background: #f0f1f6;
+  }
+}
+
+.djsuperadmin-body {
+  padding: 16px 18px;
+  overflow: auto;
+}
+
+.djsuperadmin-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid #e6e8f0;
+}
+
+.djsuperadmin-btn {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 8px 22px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.djsuperadmin-btn-save {
+  background: $djsa-accent;
+  color: #f8f8f8;
+
+  &:hover {
+    background: $djsa-accent-dark;
+  }
+}
+
+.djsuperadmin-btn-cancel {
+  background: #fff;
+  color: #4b5164;
+  border-color: #d5d8e3;
+
+  &:hover {
+    background: #f0f1f6;
+  }
+}
+
+.djsuperadmin-errorbanner {
+  display: flex;
+  justify-content: center;
+  background-color: #ff3535;
+  color: #ff3535;
+  overflow: hidden;
+  margin: 0 18px;
+  max-height: 0;
+  border-radius: 8px;
+  transition: all 0.4s ease-in-out;
+
+  &.active {
+    color: #fff;
+    max-height: 200px;
+    padding: 8px;
+  }
+}
+
+.raw-editor {
+  background: #f8f9fc;
+  width: 100%;
+  font-size: 1rem;
+  display: block;
+  min-height: 120px;
+  max-height: 60vh;
+  border: 1px solid #d5d8e3;
+  border-radius: 8px;
+  padding: 10px 12px;
+  resize: vertical;
+
+  &:focus {
+    outline: none;
+    border-color: $djsa-accent;
+  }
+}
+
+// Inline (balloon) rich-text editing should blend into the page like the raw
+// contenteditable flow, not look like a form field. SunEditor's CSS loads after
+// ours, so a few !important rules are needed to win.
+.djsuperadmin-content .sun-editor {
+  border: none !important;
+  background: transparent !important;
+  // Keep the page's own typography while editing instead of SunEditor's
+  // default editor font/size/color, so content looks the same as rendered.
+  // `.sun-editor` mounts as a sibling of the hidden .djsuperadmin element, so
+  // `inherit` here walks up to the surrounding content region.
+  font: inherit !important;
+  color: inherit !important;
+
+  .se-wrapper-inner,
+  .se-wrapper-wysiwyg {
+    background: transparent !important;
+  }
+
+  .se-wrapper-wysiwyg {
+    padding: 2px 4px !important;
+    min-height: 1.4em;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    color: inherit !important;
+    text-align: inherit !important;
+  }
+}
+
+// ── Editable region: idle affordance ────────────────────────────────────────
+// A soft dashed brand outline + a pencil cursor so it reads as "click to edit"
+// (not an error, like the old red border). Hover strengthens it and shows a
+// small "Edit" hint.
+.djsuperadmin {
+  // flow-root establishes a block-formatting context so block children
+  // (e.g. the <p> SunEditor wraps content in) don't collapse their margins
+  // through the box, which would leave the outline empty and the content
+  // spilling outside it.
+  display: flow-root;
+  width: 100%;
+  height: auto;
+  min-width: 15px;
+  min-height: 15px;
+  position: relative;
+  border-radius: 6px;
+  outline: 1px dashed rgba($djsa-accent, 0.4);
+  outline-offset: 3px;
+  transition: outline-color 0.15s ease, background 0.15s ease;
+
+  // hug the content tightly (drop the leading/trailing block margins)
+  > :first-child {
+    margin-top: 0;
+  }
+  > :last-child {
+    margin-bottom: 0;
+  }
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fc03a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E") 2 20, text;
+
+  &:hover {
+    outline-color: rgba($djsa-accent, 0.95);
+    background: rgba($djsa-accent, 0.06);
+  }
+}
+
+// ── Editable region: active editing state ───────────────────────────────────
+// A pulsing ring all around the content plus an "Editing" badge, so it is
+// unmistakable which content is currently being edited (raw or WYSIWYG).
+// The content region anchors the floating toolbar (and the editing ring).
+.djsuperadmin-content {
+  position: relative;
+}
+
+.djsuperadmin-content.djsuperadmin-editing {
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px $djsa-accent, 0 0 0 7px rgba($djsa-accent, 0.15);
+  animation: djsa-editing-pulse 1.6s ease-in-out infinite;
+
+  // no idle outline on the element being edited
+  .djsuperadmin {
+    outline: none;
+  }
+}
+
+@keyframes djsa-editing-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px $djsa-accent, 0 0 0 7px rgba($djsa-accent, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 2px $djsa-accent, 0 0 0 9px rgba($djsa-accent, 0.3);
+  }
+}
+
+// ── Edit / history toolbar ───────────────────────────────────────────────────
+// A pill of icon buttons (pencil = edit, clock = history) grouped at the
+// top-right of the content. Hidden until the region is hovered, edited, or the
+// toolbar itself is focused.
+.djsa-toolbar {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: $djsa-accent;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+  z-index: 1000003;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.djsuperadmin-content:hover > .djsa-toolbar,
+.djsuperadmin-content.djsuperadmin-editing > .djsa-toolbar,
+.djsa-toolbar.djsa-open,
+.djsa-toolbar:focus-within {
+  opacity: 1;
+  visibility: visible;
+}
+
+// While editing, the pencil is redundant and the SunEditor toolbar owns the top
+// edge — hide the pencil and tuck the pill just inside the corner so it clears
+// the editor toolbar.
+.djsuperadmin-editing > .djsa-toolbar {
+  top: 6px;
+  transform: none;
+
+  .djsa-tool-edit {
+    display: none;
+  }
+}
+
+.djsa-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.12s ease;
+
+  svg {
+    display: block;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+}
+
+.djsa-history-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  max-width: 80vw;
+  max-height: 320px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e6e8f0;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  padding: 6px;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+.djsa-history-item {
   display: block;
   width: 100%;
-  height: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 8px;
   cursor: pointer;
+
+  &:hover {
+    background: #f0f1f6;
+  }
+}
+
+.djsa-history-when {
+  display: block;
+  font: 600 11px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: $djsa-accent;
+}
+
+.djsa-history-preview {
+  display: block;
+  font-size: 12px;
+  color: #4b5164;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.djsa-history-msg {
+  padding: 10px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
 }

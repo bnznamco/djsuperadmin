@@ -1,0 +1,8 @@
+.djsuperadmin {
+    // While typing in a raw content, an I-beam is the right affordance.
+    // The "active editing" ring/badge lives on the parent (.djsuperadmin-editing).
+    &[contenteditable="true"] {
+        cursor: text;
+        outline: none;
+    }
+}
