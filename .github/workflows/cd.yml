@@ -14,6 +14,12 @@ on:
         default: "1"
         options: ["0", "1", "2", "3"]
         type: choice
+      force:
+        description: "Force bump level ('auto' derives from commits; 'major' cuts 1.0.0)"
+        required: false
+        default: "auto"
+        options: ["auto", "patch", "minor", "major"]
+        type: choice
 
 jobs:
   release:
@@ -21,8 +27,7 @@ jobs:
     concurrency: release
     name: Release to PyPI 🐍
     permissions:
-      id-token: write
-      contents: write
+      contents: write  # push the release commit + tag; PyPI upload uses an API token, not OIDC
 
     steps:
       - name: 📌 Checkout
@@ -37,6 +42,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           no_operation_mode: ${{ github.event.inputs.noop || 'false' }}
           verbosity: ${{ github.event.inputs.verbosity || 1 }}
+          force: ${{ github.event.inputs.force == 'auto' && '' || github.event.inputs.force }}
 
       - name: 🚚 Setup pnpm
         uses: pnpm/action-setup@v4
@@ -63,3 +69,5 @@ jobs:
       - name: 📤 Publish package distributions to PyPI
         if: ${{ github.event.inputs.noop != 'true' }}
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
