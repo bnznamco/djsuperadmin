@@ -4,7 +4,7 @@ First off, thanks for taking the time to contribute! 🎉
 
 **djsuperadmin** is a tiny Django app (no runtime dependencies except Django) that
 lets superusers edit page contents inline in the browser. It's MIT licensed and
-maintained by [Lotrèk](https://www.lotrek.it/). Every contribution helps — bug
+maintained by [bnznamco](https://github.com/bnznamco). Every contribution helps — bug
 reports, docs fixes, and code all count.
 
 This guide explains how to report issues, set up a development environment, and get

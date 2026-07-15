@@ -147,7 +147,7 @@ Every save keeps the previous value. Hovering an editable content shows a toolba
 (✏️ edit + **⟲ history**); the history icon lists past versions (timestamp + preview)
 and clicking one restores it — reverting is itself an undoable save. Works out of the box for the built-in `Content` model (capped by
 `MAX_VERSIONS`, default 20). Your own models opt in by exposing a
-`superadmin_history_url` — see the [docs](https://lotrekagency.github.io/djsuperadmin/).
+`superadmin_history_url` — see the [docs](https://bnznamco.github.io/djsuperadmin/).
 
 ```python
 DJSUPERADMIN = {"INPLACE_EDIT": True, "MAX_VERSIONS": 20}
@@ -205,8 +205,4 @@ uv run python manage.py runserver   # log in at /admin/, then open /
 
 ## Documentation
 
-Full docs: <https://lotrekagency.github.io/djsuperadmin/>
-
----
-
-MIT licensed, by [Lotrèk](https://www.lotrek.it/).
+Full docs: <https://bnznamco.github.io/djsuperadmin/>
