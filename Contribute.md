@@ -16,7 +16,7 @@ your changes merged.
 ## Reporting bugs
 
 Found something broken? Please open an issue on the
-[issue tracker](https://github.com/lotrekagency/djsuperadmin/issues).
+[issue tracker](https://github.com/bnznamco/djsuperadmin/issues).
 
 A good bug report includes:
 
@@ -31,7 +31,7 @@ have already reported it.
 ## Suggesting enhancements
 
 Enhancement ideas are welcome on the same
-[issue tracker](https://github.com/lotrekagency/djsuperadmin/issues). Describe the use
+[issue tracker](https://github.com/bnznamco/djsuperadmin/issues). Describe the use
 case you're trying to solve and, if you can, sketch how the API might look. Keep in
 mind that a core goal of this project is to stay small and dependency-free, so we tend
 to favour focused, minimal additions.
@@ -150,7 +150,7 @@ Rough guide to what each type triggers:
 3. If you touched the frontend, run `make build` and commit the updated bundle.
 4. Write clear, [Conventional Commits](https://www.conventionalcommits.org/)-style
    commit messages.
-5. Open a pull request against `lotrekagency/djsuperadmin`, describing the change and
+5. Open a pull request against `bnznamco/djsuperadmin`, describing the change and
    linking any related issue.
 
 A maintainer will review your PR, and CI will run the test suite. Once it's approved
