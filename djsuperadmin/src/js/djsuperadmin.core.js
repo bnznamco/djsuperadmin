@@ -130,8 +130,11 @@ var handleClick = function (event) {
 
 }
 
-var generateCacheAttr = function () {
-    return '?cache=' + ("" + (Math.random() * 100) + "" + Date.now()).replace('.', '');
+var generateCacheAttr = function (url) {
+    // Use '&' when the URL already carries a query (e.g. a headless integration
+    // passing ?language=), '?' otherwise — never produce a double '?'.
+    var sep = (url && url.indexOf('?') !== -1) ? '&' : '?';
+    return sep + 'cache=' + ("" + (Math.random() * 100) + "" + Date.now()).replace('.', '');
 }
 
 var getContent = function (element) {
@@ -146,7 +149,7 @@ var getContent = function (element) {
     } else {
         var url = get_content_url;
     }
-    fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
+    fetch(url + generateCacheAttr(url), options).then(status).then(json).then(function (data) {
         content = data;
         startEditing(element);
     }).catch(function (error) {
@@ -166,7 +169,7 @@ var pushContent = async (htmlcontent) => {
     }
     var options = getOptions('PATCH');
     options['body'] = JSON.stringify(content);
-    await fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
+    await fetch(url + generateCacheAttr(url), options).then(status).then(json).then(function (data) {
         currentE.innerHTML = htmlcontent;
         closeEditor();
     }).catch(function (error) {
@@ -296,7 +299,7 @@ var openHistory = function (panel, element) {
     var url = element.getAttribute('data-djsa-historyurl');
     panel.style.display = 'block';
     panel.innerHTML = '<div class="djsa-history-msg">Loading…</div>';
-    fetch(url + generateCacheAttr(), getOptions('GET'))
+    fetch(url + generateCacheAttr(url), getOptions('GET'))
         .then(status).then(json).then(function (data) {
             var versions = data.versions || [];
             if (!versions.length) {
