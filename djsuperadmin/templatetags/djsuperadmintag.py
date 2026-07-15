@@ -62,7 +62,7 @@ def djsuperadminjs(context):
         suneditor_js = DJSUPERADMIN_SETTINGS.get("SUNEDITOR_JS", "")
         suneditor_css = DJSUPERADMIN_SETTINGS.get("SUNEDITOR_CSS", "")
         # Optional image endpoints. Point IMAGE_GALLERY_URL at a view returning
-        # {"result": [{"src": "...", "name": "..."}, ...]} (e.g. camomilla's media
+        # {"result": [{"src": "...", "name": "..."}, ...]} (e.g. a CMS media
         # gallery) to let editors insert images from it.
         image_gallery_url = DJSUPERADMIN_SETTINGS.get("IMAGE_GALLERY_URL", "")
         image_upload_url = DJSUPERADMIN_SETTINGS.get("IMAGE_UPLOAD_URL", "")

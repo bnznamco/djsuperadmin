@@ -158,13 +158,12 @@ DJSUPERADMIN = {"INPLACE_EDIT": True, "MAX_VERSIONS": 20}
 Point `IMAGE_GALLERY_URL` at an endpoint that returns
 `{"result": [{"src": "...", "name": "..."}, ...]}` and the WYSIWYG toolbar gains an
 "insert image from gallery" button. This is designed to plug into a CMS media
-library — e.g. [camomilla](https://github.com/camomillacms/camomilla-core)'s media
-gallery. `IMAGE_UPLOAD_URL` (optional) enables direct uploads.
+library. `IMAGE_UPLOAD_URL` (optional) enables direct uploads.
 
 ```python
 DJSUPERADMIN = {
     "INPLACE_EDIT": True,
-    "IMAGE_GALLERY_URL": "/api/camomilla/media/",  # returns the media list as JSON
+    "IMAGE_GALLERY_URL": "/api/media/",  # returns the media list as JSON
 }
 ```
 

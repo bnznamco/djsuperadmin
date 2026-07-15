@@ -74,7 +74,7 @@ var loadSunEditor = () => {
 };
 
 // Optional image controls. The gallery/upload endpoints are provided by Django
-// (e.g. camomilla's media gallery) via DJSUPERADMIN settings; when neither is
+// (e.g. a CMS media gallery) via DJSUPERADMIN settings; when neither is
 // configured the buttons are omitted. SunEditor's `imageGalleryUrl` expects an
 // endpoint that returns {"result": [{"src": "...", "name": "..."}, ...]}.
 var imageGalleryUrl = () => (typeof djsa_image_gallery_url !== 'undefined' && djsa_image_gallery_url) || '';

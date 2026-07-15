@@ -102,8 +102,8 @@ page: raw contents via `contenteditable`, WYSIWYG via an inline **SunEditor**
 (mode `inline`, auto-growing; committed by clicking outside or the toolbar save
 button, cancelled with Esc). With it off, a modal is used instead. SunEditor is lazy-loaded from a CDN on first edit — URLs overridable
 via `DJSUPERADMIN["SUNEDITOR_JS"|"SUNEDITOR_CSS"]`. If `DJSUPERADMIN["IMAGE_GALLERY_URL"]`
-is set, the WYSIWYG toolbar gets an image-gallery button (for CMS media libraries
-like camomilla). The editor `GET`s the current value as JSON `{"content": ...}` and
+is set, the WYSIWYG toolbar gets an image-gallery button (for CMS media
+libraries). The editor `GET`s the current value as JSON `{"content": ...}` and
 `PATCH`es the edited value back as `{"content": ...}`.
 
 The SunEditor config lives in `buildEditorConfig()` in `djsuperadmin/src/js/djsuperadmin.core.js`
@@ -126,8 +126,8 @@ undoable and needs no extra endpoint. For the built-in `Content` model this is
 implemented by the `ContentVersion` model (snapshotted in `ContentApiView.patch`,
 capped by `DJSUPERADMIN["MAX_VERSIONS"]`, default 20) and `ContentHistoryApiView`.
 The mixin default is `None`, so other models show no history button unless they
-opt in. This is the camomilla path: camomilla content is a BYO model, so it
-records snapshots server-side and exposes `superadmin_history_url`.
+opt in. This is the BYO-model path: a custom model records snapshots
+server-side and exposes `superadmin_history_url`.
 
 ## Note
 

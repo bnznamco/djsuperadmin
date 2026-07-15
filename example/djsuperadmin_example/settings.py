@@ -82,7 +82,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # - INPLACE_EDIT: edit contents on the page (raw = contenteditable, WYSIWYG =
 #   inline SunEditor) instead of a modal.
 # - IMAGE_GALLERY_URL: an endpoint returning a media gallery for the editor's
-#   "insert image" button. Here it's the demo endpoint; in camomilla you would
+#   "insert image" button. Here it's the demo endpoint; in a real CMS you would
 #   point it at the media gallery API.
 DJSUPERADMIN = {
     "INPLACE_EDIT": True,
