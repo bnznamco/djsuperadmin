@@ -9,7 +9,7 @@ hero:
       link: /QuickStart/
       theme: brand
     - text: View on GitHub
-      link: https://github.com/lotrekagency/djsuperadmin
+      link: https://github.com/bnznamco/djsuperadmin
       theme: alt
 features:
   - title: ✍️ Edit in place

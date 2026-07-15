@@ -1,15 +1,15 @@
 # DjSuperAdmin
 
 [![PyPI version](https://img.shields.io/pypi/v/djsuperadmin?style=flat-square)](https://pypi.org/project/djsuperadmin/)
-![Codecov](https://img.shields.io/codecov/c/github/lotrekagency/djsuperadmin?style=flat-square)
-![CI status](https://img.shields.io/github/actions/workflow/status/lotrekagency/djsuperadmin/ci.yml?style=flat-square)
-[![License](https://img.shields.io/github/license/lotrekagency/djsuperadmin?style=flat-square)](./LICENSE)
+![Codecov](https://img.shields.io/codecov/c/github/bnznamco/djsuperadmin?style=flat-square)
+![CI status](https://img.shields.io/github/actions/workflow/status/bnznamco/djsuperadmin/ci.yml?style=flat-square)
+[![License](https://img.shields.io/github/license/bnznamco/djsuperadmin?style=flat-square)](./LICENSE)
 
 > ✍️ Edit contents directly on your page with Django
 
 ## Here's how it works
 
-<img src="https://github.com/lotrekagency/djsuperadmin/raw/master/demo.gif" width="100%" alt="djsuperadmin demo" />
+<img src="https://github.com/bnznamco/djsuperadmin/raw/master/demo.gif" width="100%" alt="djsuperadmin demo" />
 
 Superusers get an inline editor ([SunEditor](https://github.com/JiHong88/SunEditor),
 lazy-loaded from a CDN on first edit) right on the rendered page. Everyone else just

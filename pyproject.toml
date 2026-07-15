@@ -47,7 +47,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/lotrekagency/djsuperadmin"
+Homepage = "https://github.com/bnznamco/djsuperadmin"
 
 # Dev tooling runs on modern Python only; markers keep `uv lock` resolvable
 # down to the package's 3.6 floor without dropping the wide runtime support.

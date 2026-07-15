@@ -37,11 +37,11 @@ export default defineConfig({
       { text: 'License', link: '/License/' },
     ],
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/lotrekagency/djsuperadmin' },
+      { icon: 'github', link: 'https://github.com/bnznamco/djsuperadmin' },
     ],
     search: { provider: 'local' },
     editLink: {
-      pattern: 'https://github.com/lotrekagency/djsuperadmin/edit/master/docs/:path',
+      pattern: 'https://github.com/bnznamco/djsuperadmin/edit/master/docs/:path',
       text: 'Edit this page on GitHub',
     },
   },
