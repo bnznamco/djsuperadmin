@@ -29,4 +29,3 @@
 * Fix script injection ([`d5e239a`](https://github.com/bnznamco/djsuperadmin/commit/d5e239aa99e17ab36844a945042fb5bc567e17ee))
 
 ## v0.9.1 (2021-10-26)
-
