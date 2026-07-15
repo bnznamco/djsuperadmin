@@ -48,12 +48,13 @@ jobs:
 
       - name: 📦 Install dependencies (Django ${{ matrix.django-version }})
         run: |
-          uv add --dev "Django~=${{ matrix.django-version }}.0"
           uv sync --dev
+          uv pip install "Django~=${{ matrix.django-version }}.0"
 
       - name: 🧪 Test with pytest and calculate coverage
         env:
           COVERAGE_FILE: .coverage.${{ matrix.python-version }}-${{ matrix.django-version }}
+          UV_NO_SYNC: "1"  # keep the pinned Django; don't let `uv run` re-sync it away
         run: make test
 
       - name: 🗜️ Minimize uv cache
