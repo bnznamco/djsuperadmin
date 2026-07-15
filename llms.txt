@@ -9,7 +9,7 @@ A tiny, dependency-free Django app that turns any content on your templates into
 
 ### Other
 
-- [Changelog](/djsuperadmin/Changelog.md)
+- [CHANGELOG](/djsuperadmin/Changelog.md)
 - [Contributing to djsuperadmin](/djsuperadmin/Contribute.md)
 - [How to](/djsuperadmin/How to.md)
 - [QuickStart](/djsuperadmin/QuickStart.md)
