@@ -224,8 +224,8 @@ Give the WYSIWYG editor an image-gallery endpoint and its toolbar gains an
 # settings.py
 DJSUPERADMIN = {
     "INPLACE_EDIT": True,
-    "IMAGE_GALLERY_URL": "/api/camomilla/media/",  # your media list endpoint
-    # "IMAGE_UPLOAD_URL": "/api/camomilla/media/upload/",  # optional, for uploads
+    "IMAGE_GALLERY_URL": "/api/media/",  # your media list endpoint
+    # "IMAGE_UPLOAD_URL": "/api/media/upload/",  # optional, for uploads
 }
 ```
 
@@ -240,10 +240,9 @@ The endpoint must return JSON in the shape SunEditor expects:
 }
 ```
 
-This is meant to plug into a CMS media library — e.g.
-[camomilla](https://github.com/camomillacms/camomilla-core)'s media gallery: point
-`IMAGE_GALLERY_URL` at its media API and editors can drop existing media straight
-into the content. (See the `example/` project for a working demo endpoint.)
+This is meant to plug into a CMS media library: point `IMAGE_GALLERY_URL` at its
+media API and editors can drop existing media straight into the content. (See the
+`example/` project for a working demo endpoint.)
 
 ## Version history & revert
 
@@ -403,10 +402,6 @@ Only render the markup and load the bundle for users allowed to edit. The bundle
 saves by `fetch`ing your endpoints with the Django **session cookie +
 `X-CSRFToken`**, so the browser must be **same-origin** with the backend (e.g.
 reverse-proxy `/api`, `/admin`, `/static` to Django).
-
-> A ready-made binding for **Astro + camomilla** lives in its own
-> [astro-camomilla-integration](https://github.com/camomillacms/astro-camomilla-integration)
-> project — this repo stays framework-agnostic.
 
 ## The `{% djsuperadminjs %}` tag
 
